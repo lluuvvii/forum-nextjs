@@ -48,7 +48,7 @@ const SalesOverview = () => {
             width: 5,
             lineCap: "butt",
             colors: ["transparent"],
-          },
+        },
         dataLabels: {
             enabled: false,
         },
@@ -108,7 +108,8 @@ const SalesOverview = () => {
                 options={optionscolumnchart}
                 series={seriescolumnchart}
                 type="bar"
-                height="370px"
+                height={370}
+                width={"100%"}
             />
         </DashboardCard>
     );
