@@ -75,7 +75,7 @@ const SamplePage = () => {
     }
   }
 
-  console.log({ value })
+  // console.log({ value })
 
   return (
     <PageContainer title="Sample Page" description="this is Sample page">
