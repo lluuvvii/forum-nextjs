@@ -11,6 +11,11 @@ import Axios from 'axios'
 const SamplePage = () => {
   const [value, setValue] = useState('')
   const reactQuillRef = useRef<ReactQuill>(null)
+  const [answer, setAnswer] = useState(false)
+
+  const handleAnswer = () => {
+    setAnswer(!answer)
+  }
 
   const uploadToCLoudinary = async (file: File): Promise<string> => {
     const formData = new FormData()
@@ -84,16 +89,29 @@ const SamplePage = () => {
         <Typography>This is a sample page</Typography>
       </DashboardCard>
       <Grid container mt={3}>
-        <Grid item xs={12} style={{ height: 400 }}>
-          <ReactQuill
-            ref={reactQuillRef}
-            theme="snow"
-            value={value}
-            onChange={setValue}
-            modules={modules}
-            style={{ height: "300px" }}
-          />
+        <Grid item xs={12} mb={3}>
+          <Button variant="contained" onClick={handleAnswer}>Jawab</Button>
         </Grid>
+        {answer &&
+          <Grid container spacing={2} sx={{ mb: 3 }}>
+            <Grid item xs={12} style={{ height: 390 }}>
+              <ReactQuill
+                ref={reactQuillRef}
+                theme="snow"
+                value={value}
+                onChange={setValue}
+                modules={modules}
+                style={{ height: "300px" }}
+              />
+            </Grid>
+            <Grid item>
+              <Button variant="contained">Upload Jawaban</Button>
+            </Grid>
+            <Grid item>
+              <Button variant="outlined" onClick={handleAnswer}>Batal</Button>
+            </Grid>
+          </Grid>
+        }
         <Grid item xs={12}>
           <DashboardCard title="Answer">
             <>
