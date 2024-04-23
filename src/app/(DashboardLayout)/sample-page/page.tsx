@@ -19,6 +19,7 @@ const SamplePage = () => {
       "upload_preset",
       "forum_image_upload"
     )
+    formData.append('folder', 'forum_nextjs')
 
     const response = await Axios.post('https://api.cloudinary.com/v1_1/dbzjr3io4/image/upload', formData)
     const data = await response.data.url
