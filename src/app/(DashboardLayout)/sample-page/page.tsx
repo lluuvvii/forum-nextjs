@@ -4,33 +4,78 @@ import PageContainer from '@/app/(DashboardLayout)/components/container/PageCont
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import { useState } from 'react'
+import { useState, useCallback, useRef } from 'react'
+import Axios from 'axios'
 
-const modules = {
-  toolbar: [
-    ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-    ['blockquote', 'code-block'],
-    ['link', 'image', 'video', 'formula'],
-
-    [{ 'header': 1 }, { 'header': 2 }],               // custom button values
-    [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
-    [{ 'script': 'sub' }, { 'script': 'super' }],      // superscript/subscript
-    [{ 'indent': '-1' }, { 'indent': '+1' }],          // outdent/indent
-    [{ 'direction': 'rtl' }],                         // text direction
-
-    [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-
-    [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-    [{ 'font': [] }],
-    [{ 'align': [] }],
-
-    ['clean']                                         // remove formatting button
-  ]
-}
 
 const SamplePage = () => {
   const [value, setValue] = useState('')
+  const reactQuillRef = useRef<ReactQuill>(null)
+
+  const uploadToCLoudinary = async (file: File): Promise<string> => {
+    const formData = new FormData()
+    formData.append("file", file)
+    formData.append(
+      "upload_preset",
+      "forum_image_upload"
+    )
+
+    const response = await Axios.post('https://api.cloudinary.com/v1_1/dbzjr3io4/image/upload', formData)
+    const data = await response.data.url
+
+    return data
+  }
+
+  const imageHandler = useCallback(() => {
+    const input = document.createElement("input")
+    input.setAttribute("type", "file")
+    input.setAttribute("accept", "image/*")
+    input.click()
+    input.onchange = async () => {
+      if (input !== null && input.files !== null) {
+        const file = input.files[0]
+        const url = await uploadToCLoudinary(file)
+        const quill = reactQuillRef.current
+        if (quill) {
+          const range = quill.getEditorSelection()
+          range && quill.getEditor().insertEmbed(range.index, "image", url)
+        }
+      }
+    }
+  }, [])
+
+  const modules = {
+    toolbar: {
+      container: [
+        ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+        ['blockquote', 'code-block'],
+        ['link', 'image', 'video', 'formula'],
+
+        [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
+        [{ 'script': 'sub' }, { 'script': 'super' }],      // superscript/subscript
+        [{ 'indent': '-1' }, { 'indent': '+1' }],          // outdent/indent
+        [{ 'direction': 'rtl' }],                         // text direction
+
+        [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+
+        [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+        [{ 'font': [] }],
+        [{ 'align': [] }],
+
+        ['clean']                                         // remove formatting button
+      ],
+      handlers: {
+        image: imageHandler
+      },
+      clipboard: {
+        matchVisual: false
+      }
+    }
+  }
+
+  console.log({ value })
 
   return (
     <PageContainer title="Sample Page" description="this is Sample page">
@@ -39,14 +84,20 @@ const SamplePage = () => {
       </DashboardCard>
       <Grid container mt={3}>
         <Grid item xs={12} style={{ height: 400 }}>
-          <ReactQuill theme="snow" value={value} onChange={setValue} modules={modules} style={{ height: "300px" }} />
+          <ReactQuill
+            ref={reactQuillRef}
+            theme="snow"
+            value={value}
+            onChange={setValue}
+            modules={modules}
+            style={{ height: "300px" }}
+          />
         </Grid>
         <Grid item xs={12}>
           <DashboardCard title="Answer">
             <>
-              {/* {value} */}
+              {/* forum values */}
               <div dangerouslySetInnerHTML={{ __html: value }} />
-              <ReactQuill theme="bubble" value={value} readOnly={true} style={{ height: "300px" }} />
             </>
           </DashboardCard>
         </Grid>

@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@cloudinary/react": "^1.13.0",
+    "@cloudinary/url-gen": "^1.19.0",
     "@emotion/cache": "11.11.0",
     "@emotion/react": "11.11.1",
     "@emotion/server": "11.11.0",
@@ -21,6 +23,7 @@
     "@types/react": "18.2.18",
     "@types/react-dom": "18.2.7",
     "apexcharts": "3.41.1",
+    "axios": "^1.6.8",
     "eslint": "8.46.0",
     "eslint-config-next": "13.4.12",
     "lodash": "4.17.21",
