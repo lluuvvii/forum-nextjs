@@ -105,7 +105,7 @@ const SamplePage = () => {
               />
             </Grid>
             <Grid item>
-              <Button variant="contained">Upload Jawaban</Button>
+              <Button variant="contained" onClick={handleAnswer}>Upload Jawaban</Button>
             </Grid>
             <Grid item>
               <Button variant="outlined" onClick={handleAnswer}>Batal</Button>
