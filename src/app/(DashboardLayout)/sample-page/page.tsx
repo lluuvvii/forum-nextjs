@@ -114,10 +114,7 @@ const SamplePage = () => {
         }
         <Grid item xs={12}>
           <DashboardCard title="Answer">
-            <>
-              {/* forum values */}
-              <div dangerouslySetInnerHTML={{ __html: value }} />
-            </>
+            <div dangerouslySetInnerHTML={{ __html: value }} />
           </DashboardCard>
         </Grid>
       </Grid>
