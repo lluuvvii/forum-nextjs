@@ -68,7 +68,7 @@ const Register2 = () => (
                     variant="h6"
                     fontWeight="400"
                   >
-                    Already have an Account?
+                    Sudah mempunyai Akun?
                   </Typography>
                   <Typography
                     component={Link}
@@ -79,7 +79,7 @@ const Register2 = () => (
                       color: "primary.main",
                     }}
                   >
-                    Sign In
+                    Masuk
                   </Typography>
                 </Stack>
               }

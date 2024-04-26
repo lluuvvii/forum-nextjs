@@ -70,7 +70,7 @@ const Login2 = () => {
                       variant="h6"
                       fontWeight="500"
                     >
-                      New to Modernize?
+                      Baru di Forumophic?
                     </Typography>
                     <Typography
                       component={Link}
@@ -81,7 +81,7 @@ const Login2 = () => {
                         color: "primary.main",
                       }}
                     >
-                      Create an account
+                      Buat Akun
                     </Typography>
                   </Stack>
                 }
