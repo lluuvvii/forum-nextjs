@@ -89,9 +89,11 @@ const SamplePage = () => {
         <Typography>This is a sample page</Typography>
       </DashboardCard>
       <Grid container mt={3}>
-        <Grid item xs={12} mb={3}>
-          <Button variant="contained" onClick={handleAnswer}>Jawab</Button>
-        </Grid>
+        {!answer &&
+          <Grid item xs={12} mb={3}>
+            <Button variant="contained" onClick={handleAnswer}>Jawab</Button>
+          </Grid>
+        }
         {answer &&
           <Grid container spacing={2} sx={{ mb: 3 }}>
             <Grid item xs={12} style={{ height: 390 }}>
