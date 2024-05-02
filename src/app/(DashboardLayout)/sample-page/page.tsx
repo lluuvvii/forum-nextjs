@@ -1,10 +1,10 @@
-'use client';
+'use client'
 import { Typography, Grid, Button } from '@mui/material';
 import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import Axios from 'axios'
 
 
