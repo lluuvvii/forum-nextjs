@@ -33,21 +33,6 @@ const SamplePage = () => {
   }
 
   const imageHandler = useCallback(() => {
-    const input = document.createElement("input")
-    input.setAttribute("type", "file")
-    input.setAttribute("accept", "image/*")
-    input.click()
-    input.onchange = async () => {
-      if (input !== null && input.files !== null) {
-        const file = input.files[0]
-        const url = await uploadToCLoudinary(file)
-        const quill = reactQuillRef.current
-        if (quill) {
-          const range = quill.getEditorSelection()
-          range && quill.getEditor().insertEmbed(range.index, "image", url)
-        }
-      }
-    }
   }, [])
 
   const modules = {
