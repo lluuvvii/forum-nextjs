@@ -1,5 +1,5 @@
 'use client'
-import { Typography, Grid, Button } from '@mui/material';
+import { Typography, Grid, Button, Card, CardContent } from '@mui/material';
 import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
 import { useState } from 'react'
@@ -45,25 +45,31 @@ const SamplePage = () => {
       <Grid container mt={3}>
         {!answer &&
           <Grid item xs={12} mb={3}>
-            <Button variant="contained" onClick={handleAnswer}>Jawab</Button>
+            <Button variant="contained" onClick={handleAnswer}>Tanya</Button>
           </Grid>
         }
         {answer &&
-          <Grid container spacing={2} sx={{ mb: 3 }}>
-            <Grid item xs={12} style={{ height: 390 }}>
-              {/* wysiwys here */}
-              <TinyMCEEditor onEditorChange={handleChange} />
+          <>
+            <Grid container sx={{ mb: 3 }}>
+              <DashboardCard title="Pertanyaan">
+                <Grid container spacing={2}>
+                  <Grid item xs={12} style={{ height: 390 }} sx={{ mb: 3 }}>
+                    {/* wysiwys here */}
+                    <TinyMCEEditor onEditorChange={handleChange} />
+                  </Grid>
+                  <Grid item>
+                    <Button variant="contained" onClick={handleAnswer}>Unggah Pertanyaan</Button>
+                  </Grid>
+                  <Grid item>
+                    <Button variant="outlined" onClick={handleAnswer}>Batal</Button>
+                  </Grid>
+                </Grid>
+              </DashboardCard>
             </Grid>
-            <Grid item>
-              <Button variant="contained" onClick={handleAnswer}>Upload Jawaban</Button>
-            </Grid>
-            <Grid item>
-              <Button variant="outlined" onClick={handleAnswer}>Batal</Button>
-            </Grid>
-          </Grid>
+          </>
         }
         <Grid item xs={12}>
-          <DashboardCard title="Answer">
+          <DashboardCard title="Jawaban">
             <div dangerouslySetInnerHTML={{ __html: value }} />
           </DashboardCard>
         </Grid>
