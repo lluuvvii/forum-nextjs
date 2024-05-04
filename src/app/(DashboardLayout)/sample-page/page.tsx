@@ -4,11 +4,16 @@ import PageContainer from '@/app/(DashboardLayout)/components/container/PageCont
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
 import { useState } from 'react'
 import Axios from 'axios'
+import TinyMCEEditor from '../components/tinymce/TinyMCEEditor';
 
 
 const SamplePage = () => {
   const [value, setValue] = useState('')
   const [answer, setAnswer] = useState(false)
+
+  const handleChange = (content: any, editor: any) => {
+    setValue(content)
+  }
 
   const handleAnswer = () => {
     setAnswer(!answer)
@@ -29,6 +34,8 @@ const SamplePage = () => {
     return data
   }
 
+  console.log(value)
+
   return (
     <PageContainer title="Sample Page" description="this is Sample page">
       <div>hallo</div>
@@ -45,6 +52,7 @@ const SamplePage = () => {
           <Grid container spacing={2} sx={{ mb: 3 }}>
             <Grid item xs={12} style={{ height: 390 }}>
               {/* wysiwys here */}
+              <TinyMCEEditor onEditorChange={handleChange} />
             </Grid>
             <Grid item>
               <Button variant="contained" onClick={handleAnswer}>Upload Jawaban</Button>
