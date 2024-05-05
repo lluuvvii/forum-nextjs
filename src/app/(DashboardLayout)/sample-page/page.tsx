@@ -2,13 +2,32 @@
 import { Typography, Grid, Button, Card, CardContent } from '@mui/material';
 import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Axios from 'axios'
 import TinyMCEEditor from '../components/tinymce/TinyMCEEditor';
 
 const SamplePage = () => {
   const [value, setValue] = useState('')
+  const editorRef = useRef(null)
   const [answer, setAnswer] = useState(false)
+
+  // const uploadToCLoudinary = async (blobInfo: any, success: any, failure: any) => {
+  //   const formData = new FormData()
+  //   formData.append("file", blobInfo.blob(), blobInfo.filename())
+  //   formData.append(
+  //     "upload_preset",
+  //     "forum_image_upload"
+  //   )
+  //   formData.append('folder', 'forum_nextjs')
+
+  //   const response = await Axios.post('https://api.cloudinary.com/v1_1/dbzjr3io4/image/upload', formData, {
+  //     headers: {
+  //       'Content-Type': 'multipart/form-data'
+  //     }
+  //   })
+  //   const data = await response.data.url
+  //   success(data)
+  // }
 
   const handleChange = (content: any, editor: any) => {
     setValue(content)
@@ -16,21 +35,6 @@ const SamplePage = () => {
 
   const handleAnswer = () => {
     setAnswer(!answer)
-  }
-
-  const uploadToCLoudinary = async (file: File): Promise<string> => {
-    const formData = new FormData()
-    formData.append("file", file)
-    formData.append(
-      "upload_preset",
-      "forum_image_upload"
-    )
-    formData.append('folder', 'forum_nextjs')
-
-    const response = await Axios.post('https://api.cloudinary.com/v1_1/dbzjr3io4/image/upload', formData)
-    const data = await response.data.url
-
-    return data
   }
 
   console.log(value)
