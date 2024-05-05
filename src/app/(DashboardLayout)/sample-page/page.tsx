@@ -6,7 +6,6 @@ import { useState } from 'react'
 import Axios from 'axios'
 import TinyMCEEditor from '../components/tinymce/TinyMCEEditor';
 
-
 const SamplePage = () => {
   const [value, setValue] = useState('')
   const [answer, setAnswer] = useState(false)
