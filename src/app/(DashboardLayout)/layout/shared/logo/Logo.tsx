@@ -1,19 +1,28 @@
 import Link from "next/link";
-import { styled } from "@mui/material";
+import { Grid, styled, Typography } from "@mui/material";
 import Image from "next/image";
 
 const LinkStyled = styled(Link)(() => ({
-  height: "70px",
-  width: "180px",
+  height: "40px",
+  width: "40px",
   overflow: "hidden",
   display: "block",
 }));
 
 const Logo = () => {
   return (
-    <LinkStyled href="/">
-      <Image src="/images/logos/dark-logo.svg" alt="logo" height={70} width={174} priority />
-    </LinkStyled>
+    <Grid container spacing={1} alignItems="center" sx={{ mt: 3 }}>
+      <Grid item>
+        <LinkStyled href="/">
+          <Image src="/images/logos/keyframes.svg" alt="logo" height={40} width={40} priority />
+        </LinkStyled>
+      </Grid>
+      <Grid item>
+        <Link href="/" style={{ textDecoration: 'none', color: '#4C87B9' }}>
+          <Typography variant="h3">FORUMOPHIC</Typography>
+        </Link>
+      </Grid>
+    </Grid>
   );
 };
 
