@@ -8,8 +8,8 @@ import TinyMCEEditor from '../components/tinymce/TinyMCEEditor';
 
 const SamplePage = () => {
   const [value, setValue] = useState('')
-  const editorRef = useRef(null)
-  const [answer, setAnswer] = useState(false)
+  const [cancel, setCancel] = useState(false)
+  const [contentVal, setContentVal] = useState('')
 
   const uploadToCLoudinary = async (blobInfo: any, success: any, failure: any) => {
     const formData = new FormData()
@@ -33,11 +33,14 @@ const SamplePage = () => {
     setValue(content)
   }
 
-  const handleAnswer = () => {
-    setAnswer(!answer)
+  const handleCancel = () => {
+    setCancel(!cancel)
   }
 
-  console.log(value)
+  const handleSubmit = () => {
+    setContentVal(value)
+    setCancel(!cancel)
+  }
 
   return (
     <PageContainer title="Sample Page" description="this is Sample page">
@@ -46,12 +49,12 @@ const SamplePage = () => {
         <Typography>This is a sample page</Typography>
       </DashboardCard>
       <Grid container mt={3}>
-        {!answer &&
+        {!cancel &&
           <Grid item xs={12} mb={3}>
-            <Button variant="contained" onClick={handleAnswer}>Tanya</Button>
+            <Button variant="contained" onClick={handleCancel}>Tanya</Button>
           </Grid>
         }
-        {answer &&
+        {cancel &&
           <>
             <Grid container sx={{ mb: 3 }}>
               <DashboardCard title="Pertanyaan">
@@ -61,10 +64,10 @@ const SamplePage = () => {
                     <TinyMCEEditor onEditorChange={handleChange} uploadToCLoudinary={uploadToCLoudinary} />
                   </Grid>
                   <Grid item>
-                    <Button variant="contained" onClick={handleAnswer}>Unggah Pertanyaan</Button>
+                    <Button variant="contained" onClick={handleSubmit}>Unggah Pertanyaan</Button>
                   </Grid>
                   <Grid item>
-                    <Button variant="outlined" onClick={handleAnswer}>Batal</Button>
+                    <Button variant="outlined" onClick={handleCancel}>Batal</Button>
                   </Grid>
                 </Grid>
               </DashboardCard>
@@ -73,7 +76,7 @@ const SamplePage = () => {
         }
         <Grid item xs={12}>
           <DashboardCard title="Jawaban">
-            <div dangerouslySetInnerHTML={{ __html: value }} />
+            <div dangerouslySetInnerHTML={{ __html: contentVal }} />
           </DashboardCard>
         </Grid>
       </Grid>
