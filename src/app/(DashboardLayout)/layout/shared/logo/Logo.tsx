@@ -1,24 +1,27 @@
 import Link from "next/link";
 import { Grid, styled, Typography } from "@mui/material";
 import Image from "next/image";
+import { IconKeyframes } from "@tabler/icons-react";
 
 const LinkStyled = styled(Link)(() => ({
-  height: "40px",
-  width: "40px",
+  height: "35px",
+  width: "35px",
   overflow: "hidden",
   display: "block",
 }));
 
 const Logo = () => {
   return (
-    <Grid container spacing={1} alignItems="center" sx={{ mt: 3 }}>
+    <Grid container alignItems="center" sx={{ mt: 3 }}>
       <Grid item>
         <LinkStyled href="/">
-          <Image src="/images/logos/keyframes.svg" alt="logo" height={40} width={40} priority />
+          <IconKeyframes color="#7a7fff" width={35} height={35} />
         </LinkStyled>
       </Grid>
       <Grid item>
-        <Link href="/" style={{ textDecoration: 'none', color: '#4C87B9' }}>
+      </Grid>
+      <Grid item>
+        <Link href="/" style={{ textDecoration: 'none', color: '#7a7fff' }}>
           <Typography variant="h3">FORUMOPHIC</Typography>
         </Link>
       </Grid>
