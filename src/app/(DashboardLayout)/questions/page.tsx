@@ -1,5 +1,5 @@
 'use client'
-import { Typography, Grid, Button, Card, CardContent } from '@mui/material';
+import { Typography, Grid, Button, TextField, CardContent, Card } from '@mui/material';
 import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
 import { useState } from 'react'
@@ -13,10 +13,10 @@ const SamplePage = () => {
 
   const uploadToCLoudinary = async (blobInfo: any, success: any, failure: any) => {
     const formData = new FormData()
-    formData.append("file", blobInfo.blob(), blobInfo.filename())
+    formData.append('file', blobInfo.blob(), blobInfo.filename())
     formData.append(
-      "upload_preset",
-      "forum_image_upload"
+      'upload_preset',
+      'forum_image_upload'
     )
     formData.append('folder', 'forum_nextjs')
     const response = await Axios.post('https://api.cloudinary.com/v1_1/dbzjr3io4/image/upload', formData, {
@@ -43,30 +43,30 @@ const SamplePage = () => {
   }
 
   return (
-    <PageContainer title="Sample Page" description="this is Sample page">
-      <DashboardCard title="Sample Page">
-        <Typography>This is a sample page</Typography>
-      </DashboardCard>
+    <PageContainer title='Sample Page' description='this is Sample page'>
       <Grid container mt={3}>
-        {!cancel &&
+        {!cancel
+          ?
           <Grid item xs={12} mb={3}>
-            <Button variant="contained" onClick={handleCancel}>Tanya</Button>
+            <Button variant='contained' onClick={handleCancel}>Tanya</Button>
           </Grid>
-        }
-        {cancel &&
+          :
           <>
             <Grid container sx={{ mb: 3 }}>
-              <DashboardCard title="Pertanyaan">
+              <DashboardCard title='Pertanyaan'>
                 <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <TextField label='Judul Pertanyaan' variant='outlined' fullWidth />
+                  </Grid>
                   <Grid item xs={12} style={{ height: 390 }} sx={{ mb: 3 }}>
                     {/* wysiwys here */}
                     <TinyMCEEditor onEditorChange={handleChange} uploadToCLoudinary={uploadToCLoudinary} />
                   </Grid>
                   <Grid item>
-                    <Button variant="contained" onClick={handleSubmit}>Unggah Pertanyaan</Button>
+                    <Button variant='contained' onClick={handleSubmit}>Unggah Pertanyaan</Button>
                   </Grid>
                   <Grid item>
-                    <Button variant="outlined" onClick={handleCancel}>Batal</Button>
+                    <Button variant='outlined' onClick={handleCancel}>Batal</Button>
                   </Grid>
                 </Grid>
               </DashboardCard>
@@ -74,8 +74,12 @@ const SamplePage = () => {
           </>
         }
         <Grid item xs={12}>
-          <DashboardCard title="Jawaban">
-            <div dangerouslySetInnerHTML={{ __html: contentVal }} />
+          <DashboardCard title='Jawaban'>
+            <Card variant='outlined'>
+              <CardContent>
+                <div dangerouslySetInnerHTML={{ __html: contentVal }} />
+              </CardContent>
+            </Card>
           </DashboardCard>
         </Grid>
       </Grid>
