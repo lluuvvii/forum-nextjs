@@ -5,12 +5,17 @@ import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCa
 import { useState } from 'react'
 import Axios from 'axios'
 import TinyMCEEditor from '../components/tinymce/TinyMCEEditor';
-import TagsInput from '../components/tags/TagsInput';
+import TagsView from '../components/tags/TagsView';
 
 const SamplePage = () => {
   const [value, setValue] = useState('')
   const [cancel, setCancel] = useState(false)
-  const [contentVal, setContentVal] = useState('')
+  const [contentVal, setContentVal] = useState<any>({ content: '', tags: [] })
+
+  // tags state value
+  const [tags, setTags] = useState<string[]>([])
+  const [inputValue, setInputValue] = useState<string>('')
+  const [error, setError] = useState<string>('')
 
   const uploadToCLoudinary = async (blobInfo: any, success: any, failure: any) => {
     const formData = new FormData()
@@ -39,8 +44,34 @@ const SamplePage = () => {
   }
 
   const handleSubmit = () => {
-    setContentVal(value)
+    setContentVal({ content: value, tags })
     setCancel(!cancel)
+    setInputValue('')
+  }
+
+  // tags handler
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
+    if (error) setError('');
+  };
+
+  const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const newTag = inputValue.trim()
+      if (newTag) {
+        if (newTag.includes(' ')) {
+          setError('Tag tidak boleh berisi spasi')
+        } else {
+          setTags([...tags, newTag])
+          setInputValue('')
+        }
+      }
+    }
+  }
+
+  const handleDeleteTag = (tagToDelete: string) => {
+    setTags(tags.filter(tag => tag !== tagToDelete))
   }
 
   return (
@@ -64,7 +95,23 @@ const SamplePage = () => {
                     <TinyMCEEditor onEditorChange={handleChange} uploadToCLoudinary={uploadToCLoudinary} />
                   </Grid>
                   <Grid item xs={12}>
-                    <TagsInput />
+                    {/* tags input */}
+                    <Grid container spacing={2} alignItems="center">
+                      <Grid item xs={12}>
+                        <TextField
+                          fullWidth
+                          variant="outlined"
+                          label="Tags"
+                          value={inputValue}
+                          onChange={handleInputChange}
+                          onKeyDown={handleInputKeyDown}
+                          placeholder="Tekan Enter untuk menambahkan tag"
+                          error={Boolean(error)}
+                          helperText={error}
+                        />
+                      </Grid>
+                      <TagsView tags={tags} handleDeleteTag={handleDeleteTag} />
+                    </Grid>
                   </Grid>
                   <Grid item>
                     <Button variant='contained' onClick={handleSubmit}>Unggah Pertanyaan</Button>
@@ -81,7 +128,8 @@ const SamplePage = () => {
           <DashboardCard title='Jawaban'>
             <Card variant='outlined'>
               <CardContent>
-                <div dangerouslySetInnerHTML={{ __html: contentVal }} />
+                <div dangerouslySetInnerHTML={{ __html: contentVal.content }} />
+                <TagsView tags={contentVal.tags} />
               </CardContent>
             </Card>
           </DashboardCard>
