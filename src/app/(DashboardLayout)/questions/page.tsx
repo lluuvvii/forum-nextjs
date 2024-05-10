@@ -5,6 +5,7 @@ import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCa
 import { useState } from 'react'
 import Axios from 'axios'
 import TinyMCEEditor from '../components/tinymce/TinyMCEEditor';
+import TagsInput from '../components/tags/TagsInput';
 
 const SamplePage = () => {
   const [value, setValue] = useState('')
@@ -61,6 +62,9 @@ const SamplePage = () => {
                   <Grid item xs={12} style={{ height: 390 }} sx={{ mb: 3 }}>
                     {/* wysiwys here */}
                     <TinyMCEEditor onEditorChange={handleChange} uploadToCLoudinary={uploadToCLoudinary} />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TagsInput />
                   </Grid>
                   <Grid item>
                     <Button variant='contained' onClick={handleSubmit}>Unggah Pertanyaan</Button>
