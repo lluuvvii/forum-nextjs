@@ -1,11 +1,6 @@
 import {
-  IconAperture,
-  IconCopy,
-  IconLayoutDashboard,
-  IconLogin,
-  IconMoodHappy,
-  IconTypography,
-  IconUserPlus,
+  IconMessageQuestion,
+  IconLayoutDashboard
 } from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
@@ -28,9 +23,9 @@ const Menuitems = [
   },
   {
     id: uniqueId(),
-    title: "Sample Page",
-    icon: IconAperture,
-    href: "/sample-page",
+    title: "Questions",
+    icon: IconMessageQuestion,
+    href: "/questions",
   },
 ];
 
