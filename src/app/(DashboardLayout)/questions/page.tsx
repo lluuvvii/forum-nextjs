@@ -47,7 +47,7 @@ const SamplePage = () => {
   const handleSubmit = () => {
     setContentVal({ title, content: value, tags })
     setCancel(!cancel)
-    setInputValue('')
+    setTags([])
   }
 
   // tags handler
