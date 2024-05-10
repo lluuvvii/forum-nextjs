@@ -10,7 +10,8 @@ import TagsView from '../components/tags/TagsView';
 const SamplePage = () => {
   const [value, setValue] = useState('')
   const [cancel, setCancel] = useState(false)
-  const [contentVal, setContentVal] = useState<any>({ content: '', tags: [] })
+  const [title, setTitle] = useState('')
+  const [contentVal, setContentVal] = useState<any>({ title: '', content: '', tags: [] })
 
   // tags state value
   const [tags, setTags] = useState<string[]>([])
@@ -44,7 +45,7 @@ const SamplePage = () => {
   }
 
   const handleSubmit = () => {
-    setContentVal({ content: value, tags })
+    setContentVal({ title, content: value, tags })
     setCancel(!cancel)
     setInputValue('')
   }
@@ -88,7 +89,12 @@ const SamplePage = () => {
               <DashboardCard title='Pertanyaan'>
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
-                    <TextField label='Judul Pertanyaan' variant='outlined' fullWidth />
+                    <TextField
+                      label='Judul Pertanyaan'
+                      variant='outlined'
+                      fullWidth
+                      onChange={(e) => setTitle(e.target.value)}
+                    />
                   </Grid>
                   <Grid item xs={12} style={{ height: 390 }} sx={{ mb: 3 }}>
                     {/* wysiwys here */}
@@ -128,6 +134,7 @@ const SamplePage = () => {
           <DashboardCard title='Jawaban'>
             <Card variant='outlined'>
               <CardContent>
+                <Typography variant='h1'>{contentVal.title}</Typography>
                 <div dangerouslySetInnerHTML={{ __html: contentVal.content }} />
                 <TagsView tags={contentVal.tags} />
               </CardContent>
