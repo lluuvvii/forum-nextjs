@@ -3,11 +3,13 @@ import { Typography, Grid, Button, TextField, CardContent, Card } from '@mui/mat
 import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Axios from 'axios'
 import TinyMCEEditor from '../components/tinymce/TinyMCEEditor';
 import TagsView from '../components/tags/TagsView';
 
 const SamplePage = () => {
+  const router = useRouter()
   const [value, setValue] = useState('')
   const [cancel, setCancel] = useState(false)
   const [title, setTitle] = useState('')
@@ -69,6 +71,10 @@ const SamplePage = () => {
         }
       }
     }
+  }
+
+  const handleClickTag = (tag: string) => {
+    router.push(`/search/?tag=${tag}`)
   }
 
   const handleDeleteTag = (tagToDelete: string) => {
@@ -140,7 +146,7 @@ const SamplePage = () => {
               <CardContent>
                 <Typography variant='h1'>{contentVal.title}</Typography>
                 <div dangerouslySetInnerHTML={{ __html: contentVal.content }} />
-                <TagsView tags={contentVal.tags} />
+                <TagsView tags={contentVal.tags} handleClickTag={handleClickTag} />
               </CardContent>
             </Card>
           </DashboardCard>

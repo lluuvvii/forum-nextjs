@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Grid, Chip } from '@mui/material'
 
-const TagsView = ({ tags, handleDeleteTag }: any) => {
+const TagsView = ({ tags, handleDeleteTag, handleClickTag }: any) => {
   return (
     <Grid item xs={12}>
       {tags.map((tag: string, i: number) => {
@@ -22,12 +22,14 @@ const TagsView = ({ tags, handleDeleteTag }: any) => {
         return (
           <Chip
             key={i}
+            onClick={() => handleClickTag(tag)}
             label={tag}
             variant="outlined"
             color="primary"
             size="small"
             style={{ margin: '2px' }}
-          />)
+          />
+        )
       })}
     </Grid>
   )
