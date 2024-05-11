@@ -100,24 +100,28 @@ const SamplePage = () => {
                     {/* wysiwys here */}
                     <TinyMCEEditor onEditorChange={handleChange} uploadToCLoudinary={uploadToCLoudinary} />
                   </Grid>
+                  {/* tags input */}
                   <Grid item xs={12}>
-                    {/* tags input */}
-                    <Grid container spacing={2} alignItems="center">
-                      <Grid item xs={12}>
-                        <TextField
-                          fullWidth
-                          variant="outlined"
-                          label="Tags"
-                          value={inputValue}
-                          onChange={handleInputChange}
-                          onKeyDown={handleInputKeyDown}
-                          placeholder="Tekan Enter untuk menambahkan tag"
-                          error={Boolean(error)}
-                          helperText={error}
-                        />
-                      </Grid>
-                      <TagsView tags={tags} handleDeleteTag={handleDeleteTag} />
-                    </Grid>
+                    <Card variant='outlined'>
+                      <CardContent>
+                        <Grid container spacing={2} alignItems="center">
+                          <Grid item xs={12}>
+                            <TextField
+                              fullWidth
+                              variant="standard"
+                              label="Tags"
+                              value={inputValue}
+                              onChange={handleInputChange}
+                              onKeyDown={handleInputKeyDown}
+                              placeholder="Tekan Enter untuk menambahkan tag"
+                              error={Boolean(error)}
+                              helperText={error}
+                            />
+                          </Grid>
+                          <TagsView tags={tags} handleDeleteTag={handleDeleteTag} />
+                        </Grid>
+                      </CardContent>
+                    </Card>
                   </Grid>
                   <Grid item>
                     <Button variant='contained' onClick={handleSubmit}>Unggah Pertanyaan</Button>
