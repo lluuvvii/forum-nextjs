@@ -8,7 +8,7 @@ import Axios from 'axios'
 import TinyMCEEditor from '../components/tinymce/TinyMCEEditor';
 import TagsView from '../components/tags/TagsView';
 
-const SamplePage = () => {
+const Questions = () => {
   const router = useRouter()
   const [value, setValue] = useState('')
   const [cancel, setCancel] = useState(false)
@@ -156,4 +156,4 @@ const SamplePage = () => {
   );
 };
 
-export default SamplePage;
+export default Questions
