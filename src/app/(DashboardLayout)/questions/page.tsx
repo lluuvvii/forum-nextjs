@@ -54,13 +54,13 @@ const Questions = () => {
 
   // tags handler
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
-    if (error) setError('');
-  };
+    setInputValue(event.target.value)
+    if (error) setError('')
+  }
 
   const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      event.preventDefault();
+      event.preventDefault()
       const newTag = inputValue.trim()
       if (newTag) {
         if (newTag.includes(' ')) {
@@ -153,7 +153,7 @@ const Questions = () => {
         </Grid>
       </Grid>
     </PageContainer>
-  );
-};
+  )
+}
 
 export default Questions
