@@ -1,5 +1,5 @@
 'use client'
-import { Typography, Grid, Button, TextField, CardContent, Card, Collapse } from '@mui/material';
+import { Typography, Grid, Button, TextField, CardContent, Card, Collapse, Stack, Divider } from '@mui/material';
 import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
 import { useRef, useState } from 'react'
@@ -7,6 +7,9 @@ import { useRouter } from 'next/navigation'
 import Axios from 'axios'
 import TinyMCEEditor from '../components/tinymce/TinyMCEEditor';
 import TagsView from '../components/tags/TagsView';
+import { IconUpload } from '@tabler/icons-react';
+import { IconArrowBackUp } from '@tabler/icons-react';
+import { IconPencilQuestion } from '@tabler/icons-react';
 
 interface Question {
   title: string
@@ -88,7 +91,10 @@ const Questions = () => {
       <Grid container mt={3}>
         <Collapse in={!cancel}>
           <Grid item xs={12} mb={3}>
-            <Button variant='contained' onClick={handleCancel}>Tanya</Button>
+            <Button variant='contained' onClick={handleCancel}>
+              Tanya
+              <IconPencilQuestion size={15} style={{ marginLeft: '5px' }} />
+            </Button>
           </Grid>
         </Collapse>
         <Collapse in={cancel}>
@@ -96,42 +102,56 @@ const Questions = () => {
             <DashboardCard title='Pertanyaan'>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
-                  <TextField
-                    label='Judul Pertanyaan'
-                    variant='outlined'
-                    fullWidth
-                    onChange={(e) => setTitle(e.target.value)}
-                  />
-                </Grid>
-                <Grid item xs={12} style={{ height: 390 }} sx={{ mb: 3 }}>
-                  {/* wysiwys here */}
-                  <TinyMCEEditor onEditorChange={handleChange} uploadToCLoudinary={uploadToCLoudinary} />
-                </Grid>
-                {/* tags input */}
-                <Grid item xs={12}>
-                  <Card variant='outlined'>
-                    <CardContent>
-                      <Grid container spacing={2} alignItems="center">
-                        <Grid item xs={12}>
-                          <TextField
-                            fullWidth
-                            variant="standard"
-                            label="Tags"
-                            value={tagInputValue}
-                            onChange={handleInputChange}
-                            placeholder="Tekan Spasi untuk menambahkan tag"
-                          />
-                        </Grid>
-                        <TagsView tags={tags} handleDeleteTag={handleDeleteTag} />
-                      </Grid>
-                    </CardContent>
-                  </Card>
+                  <Stack
+                    direction="column"
+                    divider={<Divider orientation="horizontal" flexItem />}
+                    spacing={2}
+                  >
+                    <Grid item xs={12}>
+                      <TextField
+                        label='Judul Pertanyaan'
+                        variant='outlined'
+                        fullWidth
+                        onChange={(e) => setTitle(e.target.value)}
+                      />
+                    </Grid>
+                    <Grid item xs={12} style={{ height: 390 }} sx={{ mb: 3 }}>
+                      {/* wysiwys here */}
+                      <TinyMCEEditor onEditorChange={handleChange} uploadToCLoudinary={uploadToCLoudinary} />
+                    </Grid>
+                    {/* tags input */}
+                    <Grid item xs={12}>
+                      <Card variant='outlined'>
+                        <CardContent>
+                          <Grid container spacing={2} alignItems="center">
+                            <Grid item xs={12}>
+                              <TextField
+                                fullWidth
+                                variant="standard"
+                                label="Tags"
+                                value={tagInputValue}
+                                onChange={handleInputChange}
+                                placeholder="Tekan Spasi untuk menambahkan tag"
+                              />
+                            </Grid>
+                            <TagsView tags={tags} handleDeleteTag={handleDeleteTag} />
+                          </Grid>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  </Stack>
                 </Grid>
                 <Grid item>
-                  <Button variant='contained' onClick={handleSubmit}>Unggah Pertanyaan</Button>
+                  <Button variant='contained' onClick={handleSubmit}>
+                    <IconUpload size={15} style={{ marginRight: '5px' }} />
+                    Unggah Pertanyaan
+                  </Button>
                 </Grid>
                 <Grid item>
-                  <Button variant='outlined' onClick={handleCancel}>Batal</Button>
+                  <Button variant='outlined' onClick={handleCancel}>
+                    Batal
+                    <IconArrowBackUp size={15} style={{ marginLeft: '5px' }} />
+                  </Button>
                 </Grid>
               </Grid>
             </DashboardCard>
@@ -140,11 +160,20 @@ const Questions = () => {
         <Grid item xs={12}>
           <DashboardCard title='Semua Pertanyaan'>
             {allQuestions?.current?.map((question, index) => (
-              <Card key={index} sx={{ mb: 3 }} variant="outlined">
+              <Card key={index} sx={{ mb: 3 }} variant='outlined'>
                 <CardContent>
-                  <Typography variant='h1'>{question?.title}</Typography>
-                  <div dangerouslySetInnerHTML={{ __html: question?.content }} />
-                  <TagsView tags={question?.tags} handleClickTag={handleClickTag} />
+                  <Stack
+                    direction="column"
+                    divider={<Divider orientation="horizontal" flexItem />}
+                    spacing={2}
+                  >
+                    <Typography variant='h3'>{question?.title}</Typography>
+                    <Grid item>
+                      <div dangerouslySetInnerHTML={{ __html: question?.content }} />
+                      <TagsView tags={question?.tags} handleClickTag={handleClickTag} />
+                    </Grid>
+                    <TextField variant='outlined' fullWidth placeholder='Tambahkan Komentar' size='small' />
+                  </Stack>
                 </CardContent>
               </Card>
             ))}

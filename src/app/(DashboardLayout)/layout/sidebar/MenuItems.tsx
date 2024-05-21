@@ -23,7 +23,7 @@ const Menuitems = [
   },
   {
     id: uniqueId(),
-    title: "Questions",
+    title: "Pertanyaan",
     icon: IconMessageQuestion,
     href: "/questions",
   },
