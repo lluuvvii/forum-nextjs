@@ -47,19 +47,17 @@ const Questions = () => {
   }
 
   const handleSubmit = () => {
-    setContentVal({ title, content: value, tags })
     setCancel(!cancel)
+    if (cancel) {
+      setContentVal({ title, content: value, tags })
+    }
     setTags([])
   }
 
   // tags handler
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTagInputValue(event.target.value)
-    if (error) setError('')
-  }
-
-  const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === ' ') {
+    if (event.target.value.includes(' ')) {
       event.preventDefault()
       const newTag = tagInputValue.trim()
       if (newTag) {
@@ -67,6 +65,17 @@ const Questions = () => {
         setTagInputValue('')
       }
     }
+  }
+
+  const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    // if (event.key === ' ') {
+    //   event.preventDefault()
+    //   const newTag = tagInputValue.trim()
+    //   if (newTag) {
+    //     setTags([...tags, newTag])
+    //     setTagInputValue('')
+    //   }
+    // }
   }
 
   const handleClickTag = (tag: string) => {
