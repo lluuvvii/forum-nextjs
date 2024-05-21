@@ -104,7 +104,7 @@ const Questions = () => {
                 <Grid item xs={12}>
                   <Stack
                     direction="column"
-                    divider={<Divider orientation="horizontal" flexItem />}
+                    divider={<Divider orientation="horizontal" sx={{ borderWidth: '2px' }} flexItem />}
                     spacing={2}
                   >
                     <Grid item xs={12}>
@@ -164,7 +164,7 @@ const Questions = () => {
                 <CardContent>
                   <Stack
                     direction="column"
-                    divider={<Divider orientation="horizontal" flexItem />}
+                    divider={<Divider orientation="horizontal" sx={{ borderWidth: '2px' }} flexItem />}
                     spacing={2}
                   >
                     <Typography variant='h3'>{question?.title}</Typography>
