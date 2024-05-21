@@ -67,17 +67,6 @@ const Questions = () => {
     }
   }
 
-  const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    // if (event.key === ' ') {
-    //   event.preventDefault()
-    //   const newTag = tagInputValue.trim()
-    //   if (newTag) {
-    //     setTags([...tags, newTag])
-    //     setTagInputValue('')
-    //   }
-    // }
-  }
-
   const handleClickTag = (tag: string) => {
     router.push(`/search/?tag=${tag}`)
   }
@@ -122,7 +111,6 @@ const Questions = () => {
                             label="Tags"
                             value={tagInputValue}
                             onChange={handleInputChange}
-                            onKeyDown={handleInputKeyDown}
                             placeholder="Tekan Spasi untuk menambahkan tag"
                             error={Boolean(error)}
                             helperText={error}
