@@ -28,7 +28,7 @@ const TinyMCEEditor = ({ onEditorChange, uploadToCLoudinary }: any) => {
         </Box>
       )}
       <Editor
-        apiKey='2rbge8xcacyk5ou86hjs033lq6o9nwi71b3weee3ae79cjwt'
+        apiKey={process.env.NEXT_PUBLIC_API_KEY}
         init={{
           menubar: false,
           plugins: 'anchor autolink charmap codesample emoticons image link lists searchreplace table visualblocks wordcount linkchecker',

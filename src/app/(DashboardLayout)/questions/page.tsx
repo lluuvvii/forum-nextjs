@@ -17,7 +17,7 @@ const Questions = () => {
 
   // tags state value
   const [tags, setTags] = useState<string[]>([])
-  const [inputValue, setInputValue] = useState<string>('')
+  const [tagInputValue, setTagInputValue] = useState<string>('')
   const [error, setError] = useState<string>('')
 
   const uploadToCLoudinary = async (blobInfo: any, success: any, failure: any) => {
@@ -54,21 +54,17 @@ const Questions = () => {
 
   // tags handler
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value)
+    setTagInputValue(event.target.value)
     if (error) setError('')
   }
 
   const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
+    if (event.key === ' ') {
       event.preventDefault()
-      const newTag = inputValue.trim()
+      const newTag = tagInputValue.trim()
       if (newTag) {
-        if (newTag.includes(' ')) {
-          setError('Tag tidak boleh berisi spasi')
-        } else {
-          setTags([...tags, newTag])
-          setInputValue('')
-        }
+        setTags([...tags, newTag])
+        setTagInputValue('')
       }
     }
   }
@@ -115,10 +111,10 @@ const Questions = () => {
                             fullWidth
                             variant="standard"
                             label="Tags"
-                            value={inputValue}
+                            value={tagInputValue}
                             onChange={handleInputChange}
                             onKeyDown={handleInputKeyDown}
-                            placeholder="Tekan Enter untuk menambahkan tag"
+                            placeholder="Tekan Spasi untuk menambahkan tag"
                             error={Boolean(error)}
                             helperText={error}
                           />
