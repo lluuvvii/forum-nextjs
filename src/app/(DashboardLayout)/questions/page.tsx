@@ -1,5 +1,5 @@
 'use client'
-import { Typography, Grid, Button, TextField, CardContent, Card } from '@mui/material';
+import { Typography, Grid, Button, TextField, CardContent, Card, Collapse } from '@mui/material';
 import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
 import { useState } from 'react'
@@ -84,62 +84,60 @@ const Questions = () => {
   return (
     <PageContainer title='Sample Page' description='this is Sample page'>
       <Grid container mt={3}>
-        {!cancel
-          ?
+        <Collapse in={!cancel}>
           <Grid item xs={12} mb={3}>
             <Button variant='contained' onClick={handleCancel}>Tanya</Button>
           </Grid>
-          :
-          <>
-            <Grid container sx={{ mb: 3 }}>
-              <DashboardCard title='Pertanyaan'>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <TextField
-                      label='Judul Pertanyaan'
-                      variant='outlined'
-                      fullWidth
-                      onChange={(e) => setTitle(e.target.value)}
-                    />
-                  </Grid>
-                  <Grid item xs={12} style={{ height: 390 }} sx={{ mb: 3 }}>
-                    {/* wysiwys here */}
-                    <TinyMCEEditor onEditorChange={handleChange} uploadToCLoudinary={uploadToCLoudinary} />
-                  </Grid>
-                  {/* tags input */}
-                  <Grid item xs={12}>
-                    <Card variant='outlined'>
-                      <CardContent>
-                        <Grid container spacing={2} alignItems="center">
-                          <Grid item xs={12}>
-                            <TextField
-                              fullWidth
-                              variant="standard"
-                              label="Tags"
-                              value={inputValue}
-                              onChange={handleInputChange}
-                              onKeyDown={handleInputKeyDown}
-                              placeholder="Tekan Enter untuk menambahkan tag"
-                              error={Boolean(error)}
-                              helperText={error}
-                            />
-                          </Grid>
-                          <TagsView tags={tags} handleDeleteTag={handleDeleteTag} />
-                        </Grid>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                  <Grid item>
-                    <Button variant='contained' onClick={handleSubmit}>Unggah Pertanyaan</Button>
-                  </Grid>
-                  <Grid item>
-                    <Button variant='outlined' onClick={handleCancel}>Batal</Button>
-                  </Grid>
+        </Collapse>
+        <Collapse in={cancel}>
+          <Grid container sx={{ mb: 3 }}>
+            <DashboardCard title='Pertanyaan'>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    label='Judul Pertanyaan'
+                    variant='outlined'
+                    fullWidth
+                    onChange={(e) => setTitle(e.target.value)}
+                  />
                 </Grid>
-              </DashboardCard>
-            </Grid>
-          </>
-        }
+                <Grid item xs={12} style={{ height: 390 }} sx={{ mb: 3 }}>
+                  {/* wysiwys here */}
+                  <TinyMCEEditor onEditorChange={handleChange} uploadToCLoudinary={uploadToCLoudinary} />
+                </Grid>
+                {/* tags input */}
+                <Grid item xs={12}>
+                  <Card variant='outlined'>
+                    <CardContent>
+                      <Grid container spacing={2} alignItems="center">
+                        <Grid item xs={12}>
+                          <TextField
+                            fullWidth
+                            variant="standard"
+                            label="Tags"
+                            value={inputValue}
+                            onChange={handleInputChange}
+                            onKeyDown={handleInputKeyDown}
+                            placeholder="Tekan Enter untuk menambahkan tag"
+                            error={Boolean(error)}
+                            helperText={error}
+                          />
+                        </Grid>
+                        <TagsView tags={tags} handleDeleteTag={handleDeleteTag} />
+                      </Grid>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item>
+                  <Button variant='contained' onClick={handleSubmit}>Unggah Pertanyaan</Button>
+                </Grid>
+                <Grid item>
+                  <Button variant='outlined' onClick={handleCancel}>Batal</Button>
+                </Grid>
+              </Grid>
+            </DashboardCard>
+          </Grid>
+        </Collapse>
         <Grid item xs={12}>
           <DashboardCard title='Jawaban'>
             <Card variant='outlined'>
