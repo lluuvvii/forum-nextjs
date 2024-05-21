@@ -2,11 +2,17 @@
 import { Typography, Grid, Button, TextField, CardContent, Card, Collapse } from '@mui/material';
 import PageContainer from '@/app/(DashboardLayout)/components/container/PageContainer';
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard';
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Axios from 'axios'
 import TinyMCEEditor from '../components/tinymce/TinyMCEEditor';
 import TagsView from '../components/tags/TagsView';
+
+interface Question {
+  title: string
+  content: string
+  tags: string[]
+}
 
 const Questions = () => {
   const router = useRouter()
@@ -14,11 +20,11 @@ const Questions = () => {
   const [cancel, setCancel] = useState(false)
   const [title, setTitle] = useState('')
   const [contentVal, setContentVal] = useState<any>({ title: '', content: '', tags: [] })
+  const allQuestions = useRef<Question[]>([])
 
   // tags state value
   const [tags, setTags] = useState<string[]>([])
   const [tagInputValue, setTagInputValue] = useState<string>('')
-  const [error, setError] = useState<string>('')
 
   const uploadToCLoudinary = async (blobInfo: any, success: any, failure: any) => {
     const formData = new FormData()
@@ -50,6 +56,8 @@ const Questions = () => {
     setCancel(!cancel)
     if (cancel) {
       setContentVal({ title, content: value, tags })
+      const newContent = { title, content: value, tags }
+      allQuestions.current.push(newContent)
     }
     setTags([])
   }
@@ -112,8 +120,6 @@ const Questions = () => {
                             value={tagInputValue}
                             onChange={handleInputChange}
                             placeholder="Tekan Spasi untuk menambahkan tag"
-                            error={Boolean(error)}
-                            helperText={error}
                           />
                         </Grid>
                         <TagsView tags={tags} handleDeleteTag={handleDeleteTag} />
@@ -132,14 +138,16 @@ const Questions = () => {
           </Grid>
         </Collapse>
         <Grid item xs={12}>
-          <DashboardCard title='Jawaban'>
-            <Card variant='outlined'>
-              <CardContent>
-                <Typography variant='h1'>{contentVal.title}</Typography>
-                <div dangerouslySetInnerHTML={{ __html: contentVal.content }} />
-                <TagsView tags={contentVal.tags} handleClickTag={handleClickTag} />
-              </CardContent>
-            </Card>
+          <DashboardCard title='Semua Pertanyaan'>
+            {allQuestions?.current?.map((question, index) => (
+              <Card key={index} sx={{ mb: 3 }} variant="outlined">
+                <CardContent>
+                  <Typography variant='h1'>{question?.title}</Typography>
+                  <div dangerouslySetInnerHTML={{ __html: question?.content }} />
+                  <TagsView tags={question?.tags} handleClickTag={handleClickTag} />
+                </CardContent>
+              </Card>
+            ))}
           </DashboardCard>
         </Grid>
       </Grid>
