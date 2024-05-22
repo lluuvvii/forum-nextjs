@@ -18,6 +18,6 @@ const PageContainer = ({ title, description, children }: Props) => (
       {children}
     </div>
   </HelmetProvider>
-);
+)
 
-export default PageContainer;
+export default PageContainer
