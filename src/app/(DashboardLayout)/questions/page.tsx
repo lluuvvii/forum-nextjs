@@ -5,11 +5,11 @@ import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCa
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Axios from 'axios'
-import TinyMCEEditor from '../components/tinymce/TinyMCEEditor';
-import TagsView from '../components/tags/TagsView';
-import { IconUpload } from '@tabler/icons-react';
-import { IconArrowBackUp } from '@tabler/icons-react';
-import { IconPencilQuestion } from '@tabler/icons-react';
+import TinyMCEEditor from '../components/tinymce/TinyMCEEditor'
+import TagsView from '../components/tags/TagsView'
+import { IconUpload } from '@tabler/icons-react'
+import { IconArrowBackUp } from '@tabler/icons-react'
+import { IconPencilQuestion } from '@tabler/icons-react'
 
 interface Question {
   title: string
@@ -87,7 +87,7 @@ const Questions = () => {
   }
 
   return (
-    <PageContainer title='Sample Page' description='this is Sample page'>
+    <PageContainer title="Questions" description="this is Questions">
       <Grid container mt={3}>
         <Collapse in={!cancel}>
           <Grid item xs={12} mb={3}>

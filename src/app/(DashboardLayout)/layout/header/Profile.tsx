@@ -6,12 +6,12 @@ import {
   Menu,
   Button,
   IconButton,
-  MenuItem,
   ListItemIcon,
   ListItemText,
+  ListItemButton,
 } from "@mui/material";
 
-import { IconListCheck, IconMail, IconUser } from "@tabler/icons-react";
+import { IconUser } from "@tabler/icons-react";
 
 const Profile = () => {
   const [anchorEl2, setAnchorEl2] = useState(null);
@@ -63,26 +63,14 @@ const Profile = () => {
           },
         }}
       >
-        <MenuItem>
+        <ListItemButton href="/profile" LinkComponent={Link}>
           <ListItemIcon>
             <IconUser width={20} />
           </ListItemIcon>
           <ListItemText>
-            <Button href="/profile">My Profile</Button>
+            My Profile
           </ListItemText>
-        </MenuItem>
-        {/* <MenuItem>
-          <ListItemIcon>
-            <IconMail width={20} />
-          </ListItemIcon>
-          <ListItemText>My Account</ListItemText>
-        </MenuItem>
-        <MenuItem>
-          <ListItemIcon>
-            <IconListCheck width={20} />
-          </ListItemIcon>
-          <ListItemText>My Tasks</ListItemText>
-        </MenuItem> */}
+        </ListItemButton>
         <Box mt={1} py={1} px={2}>
           <Button
             href="/authentication/login"
@@ -95,7 +83,7 @@ const Profile = () => {
           </Button>
         </Box>
       </Menu>
-    </Box>
+    </Box >
   );
 };
 

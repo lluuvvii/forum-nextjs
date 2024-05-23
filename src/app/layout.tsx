@@ -4,7 +4,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { Inter } from 'next/font/google'
 
-const inter = Inter({ subsets: ['latin'], display: 'swap', adjustFontFallback: false})
+const inter = Inter({ subsets: ['latin'], display: 'swap', adjustFontFallback: false })
 
 export default function RootLayout({
   children,

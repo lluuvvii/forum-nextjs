@@ -16,7 +16,7 @@ const Profile = () => {
   }, [])
 
   return (
-    <PageContainer>
+    <PageContainer title="Profile" description="this is Questions">
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Grid container spacing={3}>
