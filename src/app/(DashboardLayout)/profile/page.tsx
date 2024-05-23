@@ -72,21 +72,11 @@ const Profile = () => {
               <Collapse in={expanded}>
                 <DashboardCard title="Komentar Saya" subtitle="Komentar Forum anda">
                   <Box sx={{ height: 200, maxHeight: 200, overflowY: 'auto' }}>
-                    <Typography variant="h1">
-                      <Skeleton animation="wave" width="100%" />
-                    </Typography>
-                    <Typography variant="h1">
-                      <Skeleton animation="wave" width="100%" />
-                    </Typography>
-                    <Typography variant="h1">
-                      <Skeleton animation="wave" width="100%" />
-                    </Typography>
-                    <Typography variant="h1">
-                      <Skeleton animation="wave" width="100%" />
-                    </Typography>
-                    <Typography variant="h1">
-                      <Skeleton animation="wave" width="100%" />
-                    </Typography>
+                    <Typography variant="h1"> <Skeleton animation="wave" width="100%" /> </Typography>
+                    <Typography variant="h1"> <Skeleton animation="wave" width="100%" /> </Typography>
+                    <Typography variant="h1"> <Skeleton animation="wave" width="100%" /> </Typography>
+                    <Typography variant="h1"> <Skeleton animation="wave" width="100%" /> </Typography>
+                    <Typography variant="h1"> <Skeleton animation="wave" width="100%" /> </Typography>
                   </Box>
                 </DashboardCard>
               </Collapse>
