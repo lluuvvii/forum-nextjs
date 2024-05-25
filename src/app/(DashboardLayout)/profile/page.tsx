@@ -1,90 +1,25 @@
-'use client'
-
-import { Avatar, Divider, Grid, Stack, Typography, colors, Card, CardContent, Button, Skeleton, Box, Collapse } from '@mui/material'
-import PageContainer from "../components/container/PageContainer"
-import DashboardCard from "../components/shared/DashboardCard"
-import { IconCalendarTime } from '@tabler/icons-react'
-import { IconEditOff } from '@tabler/icons-react'
-import { IconEdit } from '@tabler/icons-react'
-import { useEffect, useState } from 'react'
+import { Grid, Collapse } from '@mui/material'
+import UserProfile from '../components/profile/UserProfile'
+import UserComments from '../components/profile/UserComments'
 
 const Profile = () => {
-  const [expanded, setExpanded] = useState(false)
-
-  useEffect(() => {
-    setExpanded(!expanded)
-  }, [])
-
   return (
-    <PageContainer title="Profile" description="this is Questions">
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} sm={6} md={8}>
-              <Collapse in={expanded}>
-                <DashboardCard title="Profile" subtitle="Data Pribadi anda">
-                  <Box sx={{ height: { xs: 350, md: 200 }, maxHeight: { xs: 400, md: 200 }, overflowY: 'auto' }}>
-                    <Stack
-                      direction={{ xs: 'column', md: 'row' }}
-                      divider={<Divider orientation="vertical" sx={{ borderWidth: '2px' }} flexItem />}
-                      spacing={2}
-                      alignItems="center"
-                    >
-                      <Stack direction="column" spacing={2} alignItems="center">
-                        <Avatar sx={{ bgcolor: colors.deepOrange[500], width: 100, height: 100 }}>L</Avatar>
-                        <Button variant="contained" size="small">
-                          <IconEdit size={15} style={{ marginRight: '5px' }} />
-                          Edit Profile
-                        </Button>
-                      </Stack>
-                      <Grid item>
-                        <Stack direction="column" spacing={2}>
-                          <Stack direction="row" spacing={2}>
-                            <Stack direction="column" spacing={1}>
-                              <Typography variant="h6">Nickname</Typography>
-                              <Typography variant="h6">Username</Typography>
-                              <Typography variant="h6">Email</Typography>
-                            </Stack>
-                            <Stack direction="column" spacing={1}>
-                              <Typography variant="h6" sx={{ wordBreak: 'break-word' }}>luvi</Typography>
-                              <Typography variant="h6" sx={{ wordBreak: 'break-word' }}>lluuvvii</Typography>
-                              <Typography variant="h6" sx={{ wordBreak: 'break-word' }}>luvi@gmail.com</Typography>
-                            </Stack>
-                          </Stack>
-                          <Stack direction="column" spacing={1}>
-                            <Stack direction="row" alignItems="center">
-                              <IconCalendarTime style={{ marginRight: 4, color: 'darkcyan' }} size={20} />
-                              <Typography sx={{ wordBreak: 'break-word' }}>Bergabung Sejak 2024-05-20</Typography>
-                            </Stack>
-                            <Stack direction="row" alignItems="center">
-                              <IconEditOff style={{ marginRight: 4, color: 'green' }} size={20} />
-                              <Typography sx={{ wordBreak: 'break-word' }}>Diupdate Pada 2024-05-20</Typography>
-                            </Stack>
-                          </Stack>
-                        </Stack>
-                      </Grid>
-                    </Stack>
-                  </Box>
-                </DashboardCard>
-              </Collapse>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Collapse in={expanded}>
-                <DashboardCard title="Komentar Saya" subtitle="Komentar Forum anda">
-                  <Box sx={{ height: 200, maxHeight: 200, overflowY: 'auto' }}>
-                    <Typography variant="h1"> <Skeleton animation="wave" width="100%" /> </Typography>
-                    <Typography variant="h1"> <Skeleton animation="wave" width="100%" /> </Typography>
-                    <Typography variant="h1"> <Skeleton animation="wave" width="100%" /> </Typography>
-                    <Typography variant="h1"> <Skeleton animation="wave" width="100%" /> </Typography>
-                    <Typography variant="h1"> <Skeleton animation="wave" width="100%" /> </Typography>
-                  </Box>
-                </DashboardCard>
-              </Collapse>
-            </Grid>
+    <Grid container spacing={3}>
+      <Grid item xs={12}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6} md={8}>
+            <Collapse in={true}>
+              <UserProfile />
+            </Collapse>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <Collapse in={true}>
+              <UserComments />
+            </Collapse>
           </Grid>
         </Grid>
       </Grid>
-    </PageContainer>
+    </Grid>
   )
 }
 
