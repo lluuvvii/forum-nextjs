@@ -9,6 +9,7 @@ const CollapseMUI = ({ children }: any) => {
   useEffect(() => {
     setShow(true)
   }, [])
+
   return (
     <Collapse in={show}>{children}</Collapse>
   )
