@@ -1,7 +1,7 @@
 import { Grid } from '@mui/material'
 import UserProfile from '../components/profile/UserProfile'
 import UserComments from '../components/profile/UserComments'
-import CollapseMUI from '../components/collapse/CollapseMUI'
+import CollapseMUI from '../components/Collapse/CollapseMUI'
 
 const Profile = () => {
   return (
