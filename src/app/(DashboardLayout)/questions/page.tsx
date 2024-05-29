@@ -10,6 +10,7 @@ import TagsView from '../components/tags/TagsView'
 import { IconUpload } from '@tabler/icons-react'
 import { IconArrowBackUp } from '@tabler/icons-react'
 import { IconPencilQuestion } from '@tabler/icons-react'
+import CollapseMUI from '../components/Collapse/CollapseMUI'
 
 interface Question {
   title: string
@@ -89,12 +90,14 @@ const Questions = () => {
   return (
     <Grid container mt={3}>
       <Collapse in={!cancel}>
+      {/* <CollapseMUI cancel={!cancel}> */}
         <Grid item xs={12} mb={3}>
           <Button variant='contained' onClick={handleCancel}>
             Tanya
             <IconPencilQuestion size={15} style={{ marginLeft: '5px' }} />
           </Button>
         </Grid>
+      {/* </CollapseMUI> */}
       </Collapse>
       <Collapse in={cancel}>
         <Grid container sx={{ mb: 3 }}>

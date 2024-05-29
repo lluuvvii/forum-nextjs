@@ -1,9 +1,15 @@
 'use client'
 
-import { Collapse } from '@mui/material'
+import { Collapse, CollapseProps } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 
-const CollapseMUI = ({ children }: { children: React.ReactNode }) => {
+interface CollapseMUIProps extends CollapseProps {
+  children: React.ReactNode
+  cancel?: boolean
+}
+
+
+const CollapseMUI: React.FC<CollapseMUIProps> = ({ children, cancel }) => {
   const [show, setShow] = useState(false)
 
   useEffect(() => {
