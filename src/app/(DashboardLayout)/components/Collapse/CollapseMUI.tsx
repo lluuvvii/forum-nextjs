@@ -3,7 +3,7 @@
 import { Collapse } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 
-const CollapseMUI = ({ children }: any) => {
+const CollapseMUI = ({ children }: { children: React.ReactNode }) => {
   const [show, setShow] = useState(false)
 
   useEffect(() => {
