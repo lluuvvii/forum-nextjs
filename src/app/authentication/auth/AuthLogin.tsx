@@ -2,18 +2,15 @@ import React from "react"
 import {
   Box,
   Typography,
-  FormGroup,
-  FormControlLabel,
   Button,
-  Stack,
-  Checkbox,
+  Stack
 } from "@mui/material"
-import Link from "next/link"
 import { useFormik } from "formik"
 import * as Yup from 'yup'
 import { useMutation } from "react-query"
 import axios from '@/lib/axios'
 import CustomTextField from "@/app/(DashboardLayout)/components/forms/theme-elements/CustomTextField"
+import PasswordInput from "./PasswordInput"
 
 interface loginType {
   title?: string;
@@ -22,12 +19,12 @@ interface loginType {
 }
 
 const validationSchema = Yup.object({
-  email: Yup.string().required('Email or email is required'),
-  password: Yup.string().required('Password is required'),
+  email: Yup.string().required('Email wajib diisi'),
+  password: Yup.string().required('Password wajib diisi'),
 });
 
 const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
-  const { mutate, isLoading, error } = useMutation(async (values: any) => {
+  const { mutate, isLoading, error, isSuccess } = useMutation(async (values: any) => {
     const response = await axios.post('/api/login', values)
     console.log(response)
 
@@ -162,17 +159,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
             >
               Password
             </Typography>
-            <CustomTextField
-              type="password"
-              variant="outlined"
-              fullWidth
-              id="password"
-              name="password"
-              value={formik.values.password}
-              onChange={formik.handleChange}
-              error={formik.touched.password && Boolean(formik.errors.password)}
-              helperText={formik.touched.password && formik.errors.password}
-            />
+            <PasswordInput formik={formik} />
           </Box>
           <Stack
             justifyContent="space-between"
@@ -180,23 +167,6 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
             alignItems="center"
             my={2}
           >
-            <FormGroup>
-              <FormControlLabel
-                control={<Checkbox defaultChecked />}
-                label="Ingat di Situs ini"
-              />
-            </FormGroup>
-            <Typography
-              component={Link}
-              href="/"
-              fontWeight="500"
-              sx={{
-                textDecoration: "none",
-                color: "primary.main",
-              }}
-            >
-              Lupa Password?
-            </Typography>
           </Stack>
         </Stack>
         <Box>
@@ -208,7 +178,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
             type="submit"
             disabled={isLoading}
           >
-            Log In
+            Masuk
           </Button>
         </Box>
         {error ? <Typography color="error">{(error as any).message}</Typography> : null}
