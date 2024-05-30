@@ -55,7 +55,6 @@ const Login2 = () => {
                     color="textSecondary"
                     mb={1}
                   >
-                    Your Social Campaigns
                   </Typography>
                 }
                 subtitle={
