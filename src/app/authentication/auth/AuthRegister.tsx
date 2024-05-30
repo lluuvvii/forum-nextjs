@@ -90,48 +90,50 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
 
 			<form onSubmit={formik.handleSubmit}>
 				<Stack>
-					<Box mt="25px">
-						<Typography
-							variant="subtitle1"
-							fontWeight={600}
-							component="label"
-							htmlFor="name"
-							mb="5px"
-						>
-							Name
-						</Typography>
-						<CustomTextField
-							variant="outlined"
-							fullWidth
-							id="name"
-							name="name"
-							value={formik.values.name}
-							onChange={formik.handleChange}
-							error={formik.touched.name && Boolean(formik.errors.name)}
-							helperText={formik.touched.name && formik.errors.name}
-						/>
-					</Box>
-					<Box mt="25px">
-						<Typography
-							variant="subtitle1"
-							fontWeight={600}
-							component="label"
-							htmlFor="username"
-							mb="5px"
-						>
-							Username
-						</Typography>
-						<CustomTextField
-							variant="outlined"
-							fullWidth
-							id="username"
-							name="username"
-							value={formik.values.username}
-							onChange={formik.handleChange}
-							error={formik.touched.username && Boolean(formik.errors.username)}
-							helperText={formik.touched.username && formik.errors.username}
-						/>
-					</Box>
+					<Stack direction='row' spacing={2}>
+						<Box mt="25px">
+							<Typography
+								variant="subtitle1"
+								fontWeight={600}
+								component="label"
+								htmlFor="name"
+								mb="5px"
+							>
+								Name
+							</Typography>
+							<CustomTextField
+								variant="outlined"
+								fullWidth
+								id="name"
+								name="name"
+								value={formik.values.name}
+								onChange={formik.handleChange}
+								error={formik.touched.name && Boolean(formik.errors.name)}
+								helperText={formik.touched.name && formik.errors.name}
+							/>
+						</Box>
+						<Box mt="25px">
+							<Typography
+								variant="subtitle1"
+								fontWeight={600}
+								component="label"
+								htmlFor="username"
+								mb="5px"
+							>
+								Username
+							</Typography>
+							<CustomTextField
+								variant="outlined"
+								fullWidth
+								id="username"
+								name="username"
+								value={formik.values.username}
+								onChange={formik.handleChange}
+								error={formik.touched.username && Boolean(formik.errors.username)}
+								helperText={formik.touched.username && formik.errors.username}
+							/>
+						</Box>
+					</Stack>
 					<Box mt="25px">
 						<Typography
 							variant="subtitle1"
