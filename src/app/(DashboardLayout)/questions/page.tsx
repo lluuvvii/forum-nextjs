@@ -12,11 +12,25 @@ import { IconArrowBackUp } from '@tabler/icons-react'
 import { IconPencilQuestion } from '@tabler/icons-react'
 import CollapseMUI from '../components/Collapse/CollapseMUI'
 
+import { useFormik } from "formik"
+import * as Yup from 'yup'
+import { useMutation } from "react-query"
+import axios from '@/lib/axios'
+
 interface Question {
   title: string
   content: string
   tags: string[]
 }
+
+const validationSchema = Yup.object({
+  title: Yup.string().required('Judul wajib diisi'),
+  // content_value: Yup.string().required('Isi konten wajib diisi'),
+  // tags: Yup.array()
+  //   .of(Yup.string().required('Tag tidak boleh kosong'))
+  //   .required('Tags wajib diisi')
+  //   .min(1, 'Setidaknya satu tag harus diisi')
+});
 
 const Questions = () => {
   const router = useRouter()
@@ -25,6 +39,39 @@ const Questions = () => {
   const [title, setTitle] = useState('')
   const [contentVal, setContentVal] = useState<any>({ title: '', content: '', tags: [] })
   const allQuestions = useRef<Question[]>([])
+
+  const { mutate, isLoading, error, isSuccess } = useMutation(async (values: any) => {
+    try {
+      const response = await axios.post('/api/forum', values)
+      if (response.status === 200) {
+        // localStorage.setItem('token', response?.data?.data?.access_token)
+        // router.push('/')
+        console.log(response)
+      }
+
+      // return response.data
+    } catch (err: any) {
+      throw new Error(err.response.data.message)
+    }
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      title: '',
+      content_value: '',
+      tags: []
+    },
+    validationSchema,
+    onSubmit: (values) => {
+      if (formik.values.tags.length < 1) {
+        return
+      }
+      if (formik.values.content_value === '') {
+        return
+      }
+      mutate(values);
+    },
+  });
 
   // tags state value
   const [tags, setTags] = useState<string[]>([])
@@ -60,8 +107,9 @@ const Questions = () => {
     setCancel(!cancel)
     if (cancel) {
       setContentVal({ title, content: value, tags })
-      const newContent = { title, content: value, tags }
-      allQuestions.current.push(newContent)
+
+      // const newContent = { title, content: value, tags }
+      // allQuestions.current.push(newContent)
     }
     setTags([])
   }
@@ -74,6 +122,7 @@ const Questions = () => {
       const newTag = tagInputValue.trim()
       if (newTag) {
         setTags([...tags, newTag])
+        formik.setFieldValue('tags', [...tags, newTag])
         setTagInputValue('')
       }
     }
@@ -85,6 +134,7 @@ const Questions = () => {
 
   const handleDeleteTag = (tagToDelete: string) => {
     setTags(tags.filter(tag => tag !== tagToDelete))
+    formik.setFieldValue('tags', tags.filter(tag => tag !== tagToDelete))
   }
 
   return (
@@ -101,58 +151,74 @@ const Questions = () => {
         <Grid container sx={{ mb: 3 }}>
           <DashboardCard title='Pertanyaan'>
             <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Stack
-                  direction="column"
-                  divider={<Divider orientation="horizontal" sx={{ borderWidth: '2px' }} flexItem />}
-                  spacing={2}
-                >
-                  <Grid item xs={12}>
-                    <TextField
-                      label='Judul Pertanyaan'
-                      variant='outlined'
-                      fullWidth
-                      onChange={(e) => setTitle(e.target.value)}
-                    />
-                  </Grid>
-                  <Grid item xs={12} style={{ height: 390 }} sx={{ mb: 3 }}>
-                    {/* wysiwys here */}
-                    <TinyMCEEditor onEditorChange={handleChange} uploadToCLoudinary={uploadToCLoudinary} />
-                  </Grid>
-                  {/* tags input */}
-                  <Grid item xs={12}>
-                    <Card variant='outlined'>
-                      <CardContent>
-                        <Grid container spacing={2} alignItems="center">
-                          <Grid item xs={12}>
-                            <TextField
-                              fullWidth
-                              variant="standard"
-                              label="Tags"
-                              value={tagInputValue}
-                              onChange={handleInputChange}
-                              placeholder="Tekan Spasi untuk menambahkan tag"
-                            />
+              <form onSubmit={formik.handleSubmit}>
+                <Grid item xs={12}>
+                  <Stack
+                    direction="column"
+                    divider={<Divider orientation="horizontal" sx={{ borderWidth: '2px' }} flexItem />}
+                    spacing={2}
+                  >
+                    <Grid item xs={12}>
+                      <TextField
+                        label='Judul Pertanyaan'
+                        variant='outlined'
+                        fullWidth
+                        // onChange={(e) => setTitle(e.target.value)}
+                        name="title"
+                        value={formik.values.title}
+                        onChange={formik.handleChange}
+                        error={formik.touched.title && Boolean(formik.errors.title)}
+                        helperText={formik.touched.title && formik.errors.title}
+                      />
+                    </Grid>
+                    <Grid item xs={12} style={{ height: 390 }} sx={{ mb: 3 }}>
+                      {/* wysiwys here */}
+                      <TinyMCEEditor onEditorChange={(content: string) => {
+                        formik.setFieldValue('content_value', content)
+                      }} uploadToCLoudinary={uploadToCLoudinary} />
+                      {formik.values.content_value === '' ?
+                        <Typography color="error">Isi konten wajib diisi</Typography>
+                        : null}
+                    </Grid>
+                    {/* tags input */}
+                    <Grid item xs={12}>
+                      <Card variant='outlined'>
+                        <CardContent>
+                          <Grid container spacing={2} alignItems="center">
+                            <Grid item xs={12}>
+                              <TextField
+                                fullWidth
+                                variant="standard"
+                                label="Tags"
+                                name="tags"
+                                value={tagInputValue}
+                                onChange={handleInputChange}
+                                placeholder="Tekan Spasi untuk menambahkan tag"
+                              />
+                              {formik.values.tags.length < 1 ?
+                                <Typography color="error">Isi tag wajib diisi minimal 1</Typography>
+                                : null}
+                            </Grid>
+                            <TagsView tags={tags} handleDeleteTag={handleDeleteTag} />
                           </Grid>
-                          <TagsView tags={tags} handleDeleteTag={handleDeleteTag} />
-                        </Grid>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                </Stack>
-              </Grid>
-              <Grid item>
-                <Button variant='contained' onClick={handleSubmit}>
-                  <IconUpload size={15} style={{ marginRight: '5px' }} />
-                  Unggah Pertanyaan
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button variant='outlined' onClick={handleCancel}>
-                  Batal
-                  <IconArrowBackUp size={15} style={{ marginLeft: '5px' }} />
-                </Button>
-              </Grid>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  </Stack>
+                </Grid>
+                <Grid item>
+                  <Button variant='contained' type="submit">
+                    <IconUpload size={15} style={{ marginRight: '5px' }} />
+                    Unggah Pertanyaan
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <Button variant='outlined' onClick={handleCancel}>
+                    Batal
+                    <IconArrowBackUp size={15} style={{ marginLeft: '5px' }} />
+                  </Button>
+                </Grid>
+              </form>
             </Grid>
           </DashboardCard>
         </Grid>
