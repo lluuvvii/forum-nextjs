@@ -25,10 +25,17 @@ const validationSchema = Yup.object({
 
 const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
   const { mutate, isLoading, error, isSuccess } = useMutation(async (values: any) => {
-    const response = await axios.post('/api/login', values)
-    console.log(response)
+    try {
+      const response = await axios.post('/api/login', values)
+      if (response?.data?.access_token) {
+        localStorage.setItem('token', response?.data?.access_token)
+      }
 
-    return response.data
+      return response.data
+    } catch (err: any) {
+      console.log({ err: err })
+      // return err.response.data.message
+    }
   });
 
   const formik = useFormik({

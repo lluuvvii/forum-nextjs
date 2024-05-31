@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 
 import { IconUser } from "@tabler/icons-react";
+import LogoutButton from "./LogoutButton";
 
 const Profile = () => {
   const [anchorEl2, setAnchorEl2] = useState(null);
@@ -66,15 +67,7 @@ const Profile = () => {
           </ListItemText>
         </ListItemButton>
         <Box mt={1} py={1} px={2}>
-          <Button
-            href="/authentication/login"
-            variant="outlined"
-            color="primary"
-            component={Link}
-            fullWidth
-          >
-            Logout
-          </Button>
+          <LogoutButton />
         </Box>
       </Menu>
     </Box >
