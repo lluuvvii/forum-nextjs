@@ -46,7 +46,7 @@ const Questions = () => {
       if (response.status === 200) {
         // localStorage.setItem('token', response?.data?.data?.access_token)
         // router.push('/')
-        console.log(response)
+        // console.log(response)
       }
 
       // return response.data
