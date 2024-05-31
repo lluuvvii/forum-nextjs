@@ -1,4 +1,5 @@
 import React from "react"
+import { useRouter } from "next/navigation"
 import {
   Box,
   Typography,
@@ -24,17 +25,18 @@ const validationSchema = Yup.object({
 });
 
 const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
+  const router = useRouter()
   const { mutate, isLoading, error, isSuccess } = useMutation(async (values: any) => {
     try {
       const response = await axios.post('/api/login', values)
-      if (response?.data?.access_token) {
-        localStorage.setItem('token', response?.data?.access_token)
+      if (response.status === 200) {
+        localStorage.setItem('token', response?.data?.data?.access_token)
+        router.push('/')
       }
 
-      return response.data
+      // return response.data
     } catch (err: any) {
-      console.log({ err: err })
-      // return err.response.data.message
+      throw new Error(err.response.data.message)
     }
   });
 
@@ -50,80 +52,6 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
   });
 
   return (
-    // <>
-    //   {title ? (
-    //     <Typography fontWeight="700" variant="h2" mb={1}>
-    //       {title}
-    //     </Typography>
-    //   ) : null}
-
-    //   {subtext}
-
-    //   <Stack>
-    //     <Box>
-    //       <Typography
-    //         variant="subtitle1"
-    //         fontWeight={600}
-    //         component="label"
-    //         htmlFor="email"
-    //         mb="5px"
-    //       >
-    //         Email
-    //       </Typography>
-    //       <CustomTextField variant="outlined" fullWidth />
-    //     </Box>
-    //     <Box mt="25px">
-    //       <Typography
-    //         variant="subtitle1"
-    //         fontWeight={600}
-    //         component="label"
-    //         htmlFor="password"
-    //         mb="5px"
-    //       >
-    //         Password
-    //       </Typography>
-    //       <CustomTextField type="password" variant="outlined" fullWidth />
-    //     </Box>
-    //     <Stack
-    //       justifyContent="space-between"
-    //       direction="row"
-    //       alignItems="center"
-    //       my={2}
-    //     >
-    //       <FormGroup>
-    //         <FormControlLabel
-    //           control={<Checkbox defaultChecked />}
-    //           label="Ingat di Situs ini"
-    //         />
-    //       </FormGroup>
-    //       <Typography
-    //         component={Link}
-    //         href="/"
-    //         fontWeight="500"
-    //         sx={{
-    //           textDecoration: "none",
-    //           color: "primary.main",
-    //         }}
-    //       >
-    //         Lupa Password?
-    //       </Typography>
-    //     </Stack>
-    //   </Stack>
-    //   <Box>
-    //     <Button
-    //       color="primary"
-    //       variant="contained"
-    //       size="large"
-    //       fullWidth
-    //       component={Link}
-    //       href="/"
-    //       type="submit"
-    //     >
-    //       Log In
-    //     </Button>
-    //   </Box>
-    //   {subtitle}
-    // </>
     <>
       {title ? (
         <Typography fontWeight="700" variant="h2" mb={1}>
@@ -189,6 +117,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
           </Button>
         </Box>
         {error ? <Typography color="error">{(error as any).message}</Typography> : null}
+        {isSuccess ? <Typography color="success">Berhasil masuk</Typography> : null}
       </form>
       {subtitle}
     </>

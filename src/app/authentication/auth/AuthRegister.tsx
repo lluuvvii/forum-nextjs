@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { Box, Typography, Button } from '@mui/material';
 import CustomTextField from '@/app/(DashboardLayout)/components/forms/theme-elements/CustomTextField';
 import { Stack } from '@mui/system';
@@ -24,11 +25,18 @@ const validationSchema = Yup.object({
 });
 
 const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
+	const router = useRouter()
 	const { mutate, isLoading, error, isSuccess } = useMutation(async (values: any) => {
-		const response = await axios.post('/api/register', values)
-		console.log(response)
+		try {
+			const response = await axios.post('/api/register', values)
+			if (response.status === 200) {
+				router.push('/authentication/login')
+			}
 
-		return response.data
+			// return response.data
+		} catch (err: any) {
+			throw new Error(err.response.data.message)
+		}
 	});
 
 	const formik = useFormik({
@@ -200,6 +208,7 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
 					</Button>
 				</Box>
 				{error ? <Typography color="error">{(error as any).message}</Typography> : null}
+				{isSuccess ? <Typography color="success">Berhasil daftar</Typography> : null}
 			</form>
 			{subtitle}
 		</>
