@@ -2,7 +2,7 @@ import { Box, CircularProgress } from '@mui/material'
 import { Editor } from '@tinymce/tinymce-react'
 import { useState } from 'react'
 
-const TinyMCEEditor = ({ onEditorChange, uploadToCLoudinary }: any) => {
+const TinyMCEEditor = ({ onEditorChange, uploadToCLoudinary, value }: any) => {
   const [isLoading, setIsLoading] = useState(true)
 
   const handleEditorInit = () => {
@@ -49,6 +49,7 @@ const TinyMCEEditor = ({ onEditorChange, uploadToCLoudinary }: any) => {
         //   editorRef.current = editor
         // }}
         initialValue=""
+        value={value}
       />
     </div>
   )

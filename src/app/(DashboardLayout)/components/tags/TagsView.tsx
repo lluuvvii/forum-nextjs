@@ -5,7 +5,7 @@ import { Grid, Chip } from '@mui/material'
 const TagsView = ({ tags, handleDeleteTag, handleClickTag }: any) => {
   return (
     <Grid item xs={12}>
-      {tags.map((tag: string, i: number) => {
+      {tags.map((tag: any, i: number) => {
         if (handleDeleteTag) {
           return (
             <Chip
@@ -22,8 +22,8 @@ const TagsView = ({ tags, handleDeleteTag, handleClickTag }: any) => {
         return (
           <Chip
             key={i}
-            onClick={() => handleClickTag(tag)}
-            label={tag}
+            onClick={() => handleClickTag(tag.id)}
+            label={tag.tag.name}
             variant="outlined"
             color="primary"
             size="small"

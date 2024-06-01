@@ -14,8 +14,9 @@ import CollapseMUI from '../components/Collapse/CollapseMUI'
 
 import { useFormik } from "formik"
 import * as Yup from 'yup'
-import { useMutation } from "react-query"
+import { useMutation, useQuery } from "react-query"
 import axios from '@/lib/axios'
+import Link from 'next/link'
 
 interface Question {
   title: string
@@ -34,13 +35,20 @@ const validationSchema = Yup.object({
 
 const Questions = () => {
   const router = useRouter()
-  const [value, setValue] = useState('')
   const [cancel, setCancel] = useState(false)
-  const [title, setTitle] = useState('')
-  const [contentVal, setContentVal] = useState<any>({ title: '', content: '', tags: [] })
-  const allQuestions = useRef<Question[]>([])
 
-  const { mutate, isLoading, error, isSuccess } = useMutation(async (values: any) => {
+  const { data: forumQuery, refetch: refetchForumQuery, isLoading: isLoadingForumQuery } = useQuery({
+    queryKey: ['forum-data'],
+    queryFn: async () => {
+      const response = await axios.get('api/forum')
+
+      // console.log(response.data.data)
+
+      return response.data.data
+    }
+  })
+
+  const { mutate, isLoading: isLoadingForumPost, error: isErrorForumPost, isSuccess: isSuccessForumPost } = useMutation(async (values: any) => {
     try {
       const response = await axios.post('/api/forum', values)
       if (response.status === 200) {
@@ -69,6 +77,11 @@ const Questions = () => {
       if (formik.values.content_value === '') {
         return
       }
+      setCancel(!cancel)
+      formik.setFieldValue('title', '')
+      formik.setFieldValue('content_value', '')
+      formik.setFieldValue('tags', [])
+      setTags([])
       mutate(values);
     },
   });
@@ -95,22 +108,11 @@ const Questions = () => {
     return data
   }
 
-  const handleChange = (content: any, editor: any) => {
-    setValue(content)
-  }
-
   const handleCancel = () => {
     setCancel(!cancel)
-  }
-
-  const handleSubmit = () => {
-    setCancel(!cancel)
-    if (cancel) {
-      setContentVal({ title, content: value, tags })
-
-      // const newContent = { title, content: value, tags }
-      // allQuestions.current.push(newContent)
-    }
+    formik.setFieldValue('title', '')
+    formik.setFieldValue('content_value', '')
+    formik.setFieldValue('tags', [])
     setTags([])
   }
 
@@ -150,8 +152,8 @@ const Questions = () => {
       <Collapse in={cancel}>
         <Grid container sx={{ mb: 3 }}>
           <DashboardCard title='Pertanyaan'>
-            <Grid container spacing={2}>
-              <form onSubmit={formik.handleSubmit}>
+            <form onSubmit={formik.handleSubmit}>
+              <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <Stack
                     direction="column"
@@ -167,15 +169,18 @@ const Questions = () => {
                         name="title"
                         value={formik.values.title}
                         onChange={formik.handleChange}
-                        error={formik.touched.title && Boolean(formik.errors.title)}
-                        helperText={formik.touched.title && formik.errors.title}
+                        // error={formik.touched.title && Boolean(formik.errors.title)}
+                        // helperText={formik.touched.title && formik.errors.title}
                       />
+                      {formik.values.title === '' ?
+                        <Typography color="error">Judul wajib diisi</Typography>
+                        : null}
                     </Grid>
                     <Grid item xs={12} style={{ height: 390 }} sx={{ mb: 3 }}>
                       {/* wysiwys here */}
                       <TinyMCEEditor onEditorChange={(content: string) => {
                         formik.setFieldValue('content_value', content)
-                      }} uploadToCLoudinary={uploadToCLoudinary} />
+                      }} uploadToCLoudinary={uploadToCLoudinary} value={formik.values.content_value} />
                       {formik.values.content_value === '' ?
                         <Typography color="error">Isi konten wajib diisi</Typography>
                         : null}
@@ -218,14 +223,14 @@ const Questions = () => {
                     <IconArrowBackUp size={15} style={{ marginLeft: '5px' }} />
                   </Button>
                 </Grid>
-              </form>
-            </Grid>
+              </Grid>
+            </form>
           </DashboardCard>
         </Grid>
       </Collapse>
       <Grid item xs={12}>
         <DashboardCard title='Semua Pertanyaan'>
-          {allQuestions?.current?.map((question, index) => (
+          {forumQuery?.map((question: any, index: any) => (
             <Card key={index} sx={{ mb: 3 }} variant='outlined'>
               <CardContent>
                 <Stack
@@ -233,12 +238,16 @@ const Questions = () => {
                   divider={<Divider orientation="horizontal" sx={{ borderWidth: '2px' }} flexItem />}
                   spacing={2}
                 >
-                  <Typography variant='h3'>{question?.title}</Typography>
+                  <Typography variant='h3'>
+                    <Link href={`/questions/${question.id}`} style={{ textDecoration: 'none', color: 'black' }}>
+                      {question?.title}
+                    </Link>
+                  </Typography>
                   <Grid item>
-                    <div dangerouslySetInnerHTML={{ __html: question?.content }} />
-                    <TagsView tags={question?.tags} handleClickTag={handleClickTag} />
+                    {/* <div dangerouslySetInnerHTML={{ __html: question?.content }} /> */}
+                    <TagsView tags={question.forum_tags} />
                   </Grid>
-                  <TextField variant='outlined' fullWidth placeholder='Tambahkan Komentar' size='small' />
+                  {/* <TextField variant='outlined' fullWidth placeholder='Tambahkan Komentar' size='small' /> */}
                 </Stack>
               </CardContent>
             </Card>
