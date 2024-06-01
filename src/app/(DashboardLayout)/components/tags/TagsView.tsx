@@ -22,7 +22,7 @@ const TagsView = ({ tags, handleDeleteTag, handleClickTag }: any) => {
         return (
           <Chip
             key={i}
-            onClick={handleClickTag ? () => handleClickTag(tag.id) : null}
+            onClick={handleClickTag ? () => handleClickTag(tag.id) : () => { }}
             label={tag.tag.name}
             variant="outlined"
             color="primary"
