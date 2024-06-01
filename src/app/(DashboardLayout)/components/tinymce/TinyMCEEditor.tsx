@@ -18,11 +18,11 @@ const TinyMCEEditor = ({ onEditorChange, uploadToCLoudinary, value }: any) => {
           alignItems="center"
           height="100%"
           width="100%"
-          position="absolute"
+          // position="absolute"
           top={0}
           left={0}
           bgcolor="rgba(255, 255, 255, 0.8)"
-          zIndex={1}
+          // zIndex={1}
         >
           <CircularProgress />
         </Box>
