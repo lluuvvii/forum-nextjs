@@ -1,8 +1,8 @@
 'use client'
 
-import { Typography, Grid, Button, TextField, CardContent, Card, Collapse, Stack, Divider } from '@mui/material'
+import { Typography, Grid, Button, TextField, CardContent, Card, Collapse, Stack, Divider, Box, CircularProgress, Snackbar, Alert, IconButton } from '@mui/material'
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Axios from 'axios'
 import TinyMCEEditor from '../components/tinymce/TinyMCEEditor'
@@ -10,19 +10,13 @@ import TagsView from '../components/tags/TagsView'
 import { IconUpload } from '@tabler/icons-react'
 import { IconArrowBackUp } from '@tabler/icons-react'
 import { IconPencilQuestion } from '@tabler/icons-react'
-import CollapseMUI from '../components/Collapse/CollapseMUI'
+import CloseIcon from '@mui/icons-material/Close'
 
 import { useFormik } from "formik"
 import * as Yup from 'yup'
 import { useMutation, useQuery } from "react-query"
 import axios from '@/lib/axios'
 import Link from 'next/link'
-
-interface Question {
-  title: string
-  content: string
-  tags: string[]
-}
 
 const validationSchema = Yup.object({
   title: Yup.string().required('Judul wajib diisi'),
@@ -36,13 +30,12 @@ const validationSchema = Yup.object({
 const Questions = () => {
   const router = useRouter()
   const [cancel, setCancel] = useState(false)
+  const [openSnackBar, setOpenSnackBar] = useState(false)
 
   const { data: forumQuery, refetch: refetchForumQuery, isLoading: isLoadingForumQuery } = useQuery({
     queryKey: ['forum-data'],
     queryFn: async () => {
       const response = await axios.get('api/forum')
-
-      // console.log(response.data.data)
 
       return response.data.data
     }
@@ -52,9 +45,9 @@ const Questions = () => {
     try {
       const response = await axios.post('/api/forum', values)
       if (response.status === 200) {
-        // localStorage.setItem('token', response?.data?.data?.access_token)
-        // router.push('/')
-        // console.log(response)
+        setOpenSnackBar(!openSnackBar)
+        setCancel(!cancel)
+        refetchForumQuery()
       }
 
       // return response.data
@@ -77,12 +70,11 @@ const Questions = () => {
       if (formik.values.content_value === '') {
         return
       }
-      setCancel(!cancel)
+      mutate(values);
       formik.setFieldValue('title', '')
       formik.setFieldValue('content_value', '')
       formik.setFieldValue('tags', [])
       setTags([])
-      mutate(values);
     },
   });
 
@@ -169,8 +161,8 @@ const Questions = () => {
                         name="title"
                         value={formik.values.title}
                         onChange={formik.handleChange}
-                        // error={formik.touched.title && Boolean(formik.errors.title)}
-                        // helperText={formik.touched.title && formik.errors.title}
+                      // error={formik.touched.title && Boolean(formik.errors.title)}
+                      // helperText={formik.touched.title && formik.errors.title}
                       />
                       {formik.values.title === '' ?
                         <Typography color="error">Judul wajib diisi</Typography>
@@ -212,7 +204,7 @@ const Questions = () => {
                   </Stack>
                 </Grid>
                 <Grid item>
-                  <Button variant='contained' type="submit">
+                  <Button variant='contained' type="submit" disabled={isLoadingForumPost}>
                     <IconUpload size={15} style={{ marginRight: '5px' }} />
                     Unggah Pertanyaan
                   </Button>
@@ -228,8 +220,47 @@ const Questions = () => {
           </DashboardCard>
         </Grid>
       </Collapse>
+      <Grid item>
+        <Box sx={{ width: '100%' }}>
+          <Collapse in={openSnackBar}>
+            <Alert
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpenSnackBar(!openSnackBar)
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+              sx={{ mb: 2 }}
+            >
+              Berhasil diinput
+            </Alert>
+          </Collapse>
+        </Box>
+      </Grid>
       <Grid item xs={12}>
         <DashboardCard title='Semua Pertanyaan'>
+          {isLoadingForumQuery && (
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              height="100%"
+              width="100%"
+              // position="absolute"
+              top={0}
+              left={0}
+              bgcolor="rgba(255, 255, 255, 0.8)"
+            // zIndex={1}
+            >
+              <CircularProgress />
+            </Box>
+          )}
           {forumQuery?.map((question: any, index: any) => (
             <Card key={index} sx={{ mb: 3 }} variant='outlined'>
               <CardContent>
