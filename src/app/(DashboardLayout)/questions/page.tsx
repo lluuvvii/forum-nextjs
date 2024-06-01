@@ -157,12 +157,9 @@ const Questions = () => {
                         label='Judul Pertanyaan'
                         variant='outlined'
                         fullWidth
-                        // onChange={(e) => setTitle(e.target.value)}
                         name="title"
                         value={formik.values.title}
                         onChange={formik.handleChange}
-                      // error={formik.touched.title && Boolean(formik.errors.title)}
-                      // helperText={formik.touched.title && formik.errors.title}
                       />
                       {formik.values.title === '' ?
                         <Typography color="error">Judul wajib diisi</Typography>
@@ -220,29 +217,16 @@ const Questions = () => {
           </DashboardCard>
         </Grid>
       </Collapse>
-      <Grid item>
-        <Box sx={{ width: '100%' }}>
-          <Collapse in={openSnackBar}>
-            <Alert
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setOpenSnackBar(!openSnackBar)
-                  }}
-                >
-                  <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-              sx={{ mb: 2 }}
-            >
-              Berhasil diinput
-            </Alert>
-          </Collapse>
-        </Box>
-      </Grid>
+      <Snackbar open={openSnackBar} autoHideDuration={6000} onClose={() => setOpenSnackBar(!openSnackBar)} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+        <Alert
+          onClose={() => setOpenSnackBar(!openSnackBar)}
+          severity="success"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          Berhasil diinput
+        </Alert>
+      </Snackbar>
       <Grid item xs={12}>
         <DashboardCard title='Semua Pertanyaan'>
           {isLoadingForumQuery && (
