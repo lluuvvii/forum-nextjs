@@ -268,9 +268,9 @@ const Questions = () => {
             </Box>
           )}
           {forumQuery?.map((question: any, index: any) => (
-            <Grid container spacing={2}>
+            <Grid key={index} container spacing={2}>
               <Grid item xs={12}>
-                <Card key={index} variant='outlined'>
+                <Card variant='outlined'>
                   <CardContent>
                     <Stack
                       direction="column"
