@@ -1,6 +1,6 @@
 'use client'
 
-import { Typography, Grid, Button, TextField, CardContent, Card, Collapse, Stack, Divider, Box, CircularProgress, Snackbar, Alert, IconButton } from '@mui/material'
+import { Typography, Grid, Button, TextField, CardContent, Card, Collapse, Stack, Divider, Box, CircularProgress, Snackbar, Alert, IconButton, Chip } from '@mui/material'
 import DashboardCard from '@/app/(DashboardLayout)/components/shared/DashboardCard'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -17,6 +17,7 @@ import * as Yup from 'yup'
 import { useMutation, useQuery } from "react-query"
 import axios from '@/lib/axios'
 import Link from 'next/link'
+import { IconClockPlus } from '@tabler/icons-react'
 
 const validationSchema = Yup.object({
   title: Yup.string().required('Judul wajib diisi'),
@@ -35,7 +36,16 @@ const Questions = () => {
   const { data: forumQuery, refetch: refetchForumQuery, isLoading: isLoadingForumQuery } = useQuery({
     queryKey: ['forum-data'],
     queryFn: async () => {
-      const response = await axios.get('api/forum')
+      const response = await axios.get('/api/forum')
+
+      return response.data.data
+    }
+  })
+
+  const { data: userLoginQuery } = useQuery({
+    queryKey: ['user-login-data'],
+    queryFn: async () => {
+      const response = await axios.get('/api/user')
 
       return response.data.data
     }
@@ -130,6 +140,18 @@ const Questions = () => {
     setTags(tags.filter(tag => tag !== tagToDelete))
     formik.setFieldValue('tags', tags.filter(tag => tag !== tagToDelete))
   }
+
+  const formatDate = (dateString: any) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }) + ' ' + date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
 
   return (
     <Grid container mt={3}>
@@ -246,26 +268,33 @@ const Questions = () => {
             </Box>
           )}
           {forumQuery?.map((question: any, index: any) => (
-            <Card key={index} sx={{ mb: 3 }} variant='outlined'>
-              <CardContent>
-                <Stack
-                  direction="column"
-                  divider={<Divider orientation="horizontal" sx={{ borderWidth: '2px' }} flexItem />}
-                  spacing={2}
-                >
-                  <Typography variant='h3'>
-                    <Link href={`/questions/${question.id}`} style={{ textDecoration: 'none', color: 'black' }}>
-                      {question?.title}
-                    </Link>
-                  </Typography>
-                  <Grid item>
-                    {/* <div dangerouslySetInnerHTML={{ __html: question?.content }} /> */}
-                    <TagsView tags={question.forum_tags} />
-                  </Grid>
-                  {/* <TextField variant='outlined' fullWidth placeholder='Tambahkan Komentar' size='small' /> */}
-                </Stack>
-              </CardContent>
-            </Card>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <Card key={index} variant='outlined'>
+                  <CardContent>
+                    <Stack
+                      direction="column"
+                      // divider={<Divider orientation="horizontal" sx={{ borderWidth: '1px' }} flexItem />}
+                      spacing={2}
+                    >
+                      <Link href={`/questions/${question.id}`} style={{ textDecoration: 'none', color: 'black' }}>
+                        <Typography variant='h6' sx={{ mb: 2 }}>
+                          {userLoginQuery?.id === question?.user_id ?
+                            <Typography sx={{ mb: 1 }}>
+                              Pertanyaan saya : {userLoginQuery?.username} <Chip label={formatDate(question?.created_at)} size="small" sx={{ color: "#078500", borderColor: "#078500" }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
+                            </Typography>
+                            : <Typography sx={{ mb: 1 }}>
+                              User : {question?.username ? question?.username : '...'} <Chip label={formatDate(question?.created_at)} size="small" sx={{ color: "#078500", borderColor: "#078500" }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
+                            </Typography>}
+                          {question?.title}
+                        </Typography>
+                        <TagsView tags={question.forum_tags} />
+                      </Link>
+                    </Stack>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
           ))}
         </DashboardCard>
       </Grid>
