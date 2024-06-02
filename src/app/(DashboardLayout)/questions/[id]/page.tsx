@@ -37,7 +37,7 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
       {detailForumQuery ?
         <>
           {detailForumQuery?.contents?.map((content: any, index: any) => (
-            <Grid item xs={12}>
+            <Grid key={index} item xs={12}>
               <Card variant='outlined'>
                 <CardContent>
                   <Stack
