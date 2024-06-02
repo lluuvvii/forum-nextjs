@@ -15,6 +15,7 @@ import { IconPencilQuestion } from '@tabler/icons-react'
 
 import { useFormik } from "formik"
 import * as Yup from 'yup'
+import { useRouter } from 'next/navigation'
 
 const validationSchema = Yup.object({
   title: Yup.string().required('Judul wajib diisi'),
@@ -26,13 +27,21 @@ const validationSchema = Yup.object({
 });
 
 const QuestionForm = () => {
+  const router = useRouter()
   const [cancel, setCancel] = useState(false)
   const [openSnackBar, setOpenSnackBar] = useState(false)
 
+  const getToken = () => {
+    const token = localStorage.getItem('token')
+    return token
+  }
+
   const { data: forumQuery, refetch: refetchForumQuery, isLoading: isLoadingForumQuery } = useQuery({
-    queryKey: ['forum-data-forPost'],
+    queryKey: ['forum-data'],
     queryFn: async () => {
-      await axios.get('/api/forum')
+      const response = await axios.get('/api/forum')
+
+      return response.data.data
     }
   })
 
@@ -96,6 +105,10 @@ const QuestionForm = () => {
   }
 
   const handleCancel = () => {
+    if (!getToken()) {
+      router.push('/authentication/login')
+      return
+    }
     setCancel(!cancel)
     formik.setFieldValue('title', '')
     formik.setFieldValue('content_value', '')
