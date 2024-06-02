@@ -2,7 +2,7 @@ import { Button } from '@mui/material'
 import Link from 'next/link'
 import React from 'react'
 
-const LogoutButton = () => {
+const LoginButton = () => {
   return (
     <Button
       href="/authentication/login"
@@ -12,9 +12,9 @@ const LogoutButton = () => {
       fullWidth
       onClick={() => localStorage.removeItem('token')}
     >
-      Keluar
+      Masuk
     </Button>
   )
 }
 
-export default LogoutButton
+export default LoginButton

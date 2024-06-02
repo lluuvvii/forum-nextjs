@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
 import TagsView from '../tags/TagsView'
 import DashboardCard from '../shared/DashboardCard'
@@ -9,8 +9,10 @@ import axios from '@/lib/axios'
 import Link from 'next/link'
 import { IconClockPlus } from '@tabler/icons-react'
 import { useQuery } from 'react-query'
+import { IconClockEdit } from '@tabler/icons-react'
 
 const AllQuestions = () => {
+  const [token, setToken] = useState<any>(null)
   const { data: forumQuery, refetch: refetchForumQuery, isLoading: isLoadingForumQuery } = useQuery({
     queryKey: ['forum-data'],
     queryFn: async () => {
@@ -41,6 +43,11 @@ const AllQuestions = () => {
     });
   };
 
+  useEffect(() => {
+    setToken(localStorage.getItem('token'))
+  }, [])
+
+
   return (
     <DashboardCard title='Semua Pertanyaan'>
       {isLoadingForumQuery && (
@@ -70,12 +77,24 @@ const AllQuestions = () => {
                 >
                   <Link href={`/questions/${question.id}`} style={{ textDecoration: 'none', color: 'black' }}>
                     <Typography variant='h6' sx={{ mb: 2 }}>
-                      {userLoginQuery?.id === question?.user_id ?
+                      {userLoginQuery?.id === question?.user_id && token ?
                         <Typography sx={{ mb: 1 }}>
-                          Pertanyaan saya : {userLoginQuery?.username} <Chip label={formatDate(question?.created_at)} size="small" sx={{ color: "#078500", borderColor: "#078500" }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
+                          <Stack direction="row" spacing={1}>
+                            <Typography>
+                              Pertanyaan saya : {userLoginQuery?.username}
+                            </Typography>
+                            <Chip label={formatDate(question?.created_at)} size="small" sx={{ color: "#078500", borderColor: "#078500" }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
+                            <Chip label={formatDate(question?.updated_at)} size="small" sx={{ color: "#bdad00", borderColor: "#bdad00" }} variant="outlined" icon={<IconClockEdit size={15} color='#bdad00' />} />
+                          </Stack>
                         </Typography>
                         : <Typography sx={{ mb: 1 }}>
-                          User : {question?.username ? question?.username : '...'} <Chip label={formatDate(question?.created_at)} size="small" sx={{ color: "#078500", borderColor: "#078500" }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
+                          <Stack direction="row" spacing={1}>
+                            <Typography>
+                              User : {question?.username ? question?.username : '...'}
+                            </Typography>
+                            <Chip label={formatDate(question?.created_at)} size="small" sx={{ color: "#078500", borderColor: "#078500" }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
+                            <Chip label={formatDate(question?.updated_at)} size="small" sx={{ color: "#bdad00", borderColor: "#bdad00" }} variant="outlined" icon={<IconClockEdit size={15} color='#bdad00' />} />
+                          </Stack>
                         </Typography>}
                       {question?.title}
                     </Typography>
