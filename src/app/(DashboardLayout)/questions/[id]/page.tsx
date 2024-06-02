@@ -47,7 +47,7 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                     <Grid container spacing={1}>
                       {content.user_id === detailForumQuery?.user_id ?
                         <Grid item xs={12}>
-                          <Typography variant='h3'>
+                          <Typography variant='h3' sx={{ mb: 2, wordBreak: 'break-word' }}>
                             {detailForumQuery?.title} <Chip label={formatDate(detailForumQuery?.created_at)} size="small" sx={{ color: "#078500", borderColor: "#078500" }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
                           </Typography>
                         </Grid>

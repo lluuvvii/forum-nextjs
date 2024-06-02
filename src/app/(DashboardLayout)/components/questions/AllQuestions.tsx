@@ -10,6 +10,7 @@ import Link from 'next/link'
 import { IconClockPlus } from '@tabler/icons-react'
 import { useQuery } from 'react-query'
 import { IconClockEdit } from '@tabler/icons-react'
+import { IconUser } from '@tabler/icons-react'
 
 const AllQuestions = () => {
   const [token, setToken] = useState<any>(null)
@@ -76,25 +77,21 @@ const AllQuestions = () => {
                   spacing={2}
                 >
                   <Link href={`/questions/${question.id}`} style={{ textDecoration: 'none', color: 'black' }}>
-                    <Typography variant='h6' sx={{ mb: 2 }}>
+                    <Typography variant='h6' sx={{ mb: 2, wordBreak: 'break-word' }}>
                       {userLoginQuery?.id === question?.user_id && token ?
                         <Typography sx={{ mb: 1 }}>
-                          <Stack direction="row" spacing={1}>
-                            <Typography>
-                              Pertanyaan saya : {userLoginQuery?.username}
-                            </Typography>
-                            <Chip label={formatDate(question?.created_at)} size="small" sx={{ color: "#078500", borderColor: "#078500" }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
-                            <Chip label={formatDate(question?.updated_at)} size="small" sx={{ color: "#bdad00", borderColor: "#bdad00" }} variant="outlined" icon={<IconClockEdit size={15} color='#bdad00' />} />
-                          </Stack>
+                          <Typography>
+                          <IconUser size={15} /> Pertanyaan saya : {userLoginQuery?.username}
+                          </Typography>
+                          <Chip label={formatDate(question?.created_at)} size="small" sx={{ color: "#078500", borderColor: "#078500" }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
+                          <Chip label={formatDate(question?.updated_at)} size="small" sx={{ color: "#bdad00", borderColor: "#bdad00" }} variant="outlined" icon={<IconClockEdit size={15} color='#bdad00' />} />
                         </Typography>
                         : <Typography sx={{ mb: 1 }}>
-                          <Stack direction="row" spacing={1}>
-                            <Typography>
-                              User : {question?.username ? question?.username : '...'}
-                            </Typography>
-                            <Chip label={formatDate(question?.created_at)} size="small" sx={{ color: "#078500", borderColor: "#078500" }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
-                            <Chip label={formatDate(question?.updated_at)} size="small" sx={{ color: "#bdad00", borderColor: "#bdad00" }} variant="outlined" icon={<IconClockEdit size={15} color='#bdad00' />} />
-                          </Stack>
+                          <Typography>
+                            <IconUser size={15} /> {question?.user.username}
+                          </Typography>
+                          <Chip label={formatDate(question?.created_at)} size="small" sx={{ color: "#078500", borderColor: "#078500" }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
+                          <Chip label={formatDate(question?.updated_at)} size="small" sx={{ color: "#bdad00", borderColor: "#bdad00" }} variant="outlined" icon={<IconClockEdit size={15} color='#bdad00' />} />
                         </Typography>}
                       {question?.title}
                     </Typography>
