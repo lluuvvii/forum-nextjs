@@ -4,10 +4,10 @@ import React, { useState, useEffect } from 'react'
 
 import TagsView from '../tags/TagsView'
 import DashboardCard from '../shared/DashboardCard'
-import { Card, CardContent, Stack, Typography, Grid, Box, CircularProgress, Chip } from '@mui/material'
+import { Card, CardContent, Stack, Typography, Grid, Box, CircularProgress, Chip, Button } from '@mui/material'
 import axios from '@/lib/axios'
 import Link from 'next/link'
-import { IconClockPlus } from '@tabler/icons-react'
+import { IconCheck, IconClockPlus, IconX } from '@tabler/icons-react'
 import { useQuery } from 'react-query'
 import { IconClockEdit } from '@tabler/icons-react'
 import { IconUser } from '@tabler/icons-react'
@@ -34,11 +34,11 @@ const AllQuestions = () => {
 
   const formatDate = (dateString: any) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString('id-ID', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
-    }) + ' ' + date.toLocaleTimeString('en-US', {
+    }) + ' ' + date.toLocaleTimeString('id-ID', {
       hour: '2-digit',
       minute: '2-digit',
     });
@@ -76,27 +76,51 @@ const AllQuestions = () => {
                   direction="column"
                   spacing={2}
                 >
-                  <Link href={`/questions/${question.id}`} style={{ textDecoration: 'none', color: 'black' }}>
-                    <Typography variant='h6' sx={{ mb: 2, wordBreak: 'break-word' }}>
-                      {userLoginQuery?.id === question?.user_id && token ?
-                        <Typography sx={{ mb: 1 }}>
-                          <Typography>
+                  {userLoginQuery?.id === question?.user_id && token ?
+                    <Typography sx={{ mb: 1 }}>
+                      <Grid container justifyContent='space-between'>
+                        <Typography>
                           <IconUser size={15} /> Pertanyaan saya : {userLoginQuery?.username}
-                          </Typography>
-                          <Chip label={formatDate(question?.created_at)} size="small" sx={{ color: "#078500", borderColor: "#078500" }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
-                          <Chip label={formatDate(question?.updated_at)} size="small" sx={{ color: "#bdad00", borderColor: "#bdad00" }} variant="outlined" icon={<IconClockEdit size={15} color='#bdad00' />} />
                         </Typography>
-                        : <Typography sx={{ mb: 1 }}>
-                          <Typography>
-                            <IconUser size={15} /> {question?.user.username}
-                          </Typography>
-                          <Chip label={formatDate(question?.created_at)} size="small" sx={{ color: "#078500", borderColor: "#078500" }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
-                          <Chip label={formatDate(question?.updated_at)} size="small" sx={{ color: "#bdad00", borderColor: "#bdad00" }} variant="outlined" icon={<IconClockEdit size={15} color='#bdad00' />} />
-                        </Typography>}
+                        <Button color={question?.is_resolved === 0 ? "error" : "success"} variant="outlined" size="small">
+                          {question?.is_resolved === 0 ?
+                            <>
+                              Belum selesai <IconX size={15} />
+                            </>
+                            :
+                            <>
+                              Selesai <IconCheck size={15} />
+                            </>}
+                        </Button>
+                      </Grid>
+                      <Chip label={formatDate(question?.created_at)} size="small" sx={{ color: "#078500", border: 'none' }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
+                      <Chip label={formatDate(question?.updated_at)} size="small" sx={{ color: "#bdad00", border: 'none' }} variant="outlined" icon={<IconClockEdit size={15} color='#bdad00' />} />
+                    </Typography>
+                    : <Typography sx={{ mb: 1 }}>
+                      <Grid container justifyContent='space-between'>
+                        <Typography>
+                          <IconUser size={15} /> {question?.user.username}
+                        </Typography>
+                        <Button color={question?.is_resolved === 0 ? "error" : "success"} variant="outlined" size="small">
+                          {question?.is_resolved === 0 ?
+                            <>
+                              Belum selesai <IconX size={15} />
+                            </>
+                            :
+                            <>
+                              Selesai <IconCheck size={15} />
+                            </>}
+                        </Button>
+                      </Grid>
+                      <Chip label={formatDate(question?.created_at)} size="small" sx={{ color: "#078500", border: 'none' }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
+                      <Chip label={formatDate(question?.updated_at)} size="small" sx={{ color: "#bdad00", border: 'none' }} variant="outlined" icon={<IconClockEdit size={15} color='#bdad00' />} />
+                    </Typography>}
+                  <Link href={`/questions/${question.id}`} style={{ textDecoration: 'none', color: 'black' }}>
+                    <Typography variant='h6' sx={{ mb: 1, wordBreak: 'break-word' }}>
                       {question?.title}
                     </Typography>
-                    <TagsView tags={question.forum_tags} />
                   </Link>
+                  <TagsView tags={question.forum_tags} />
                 </Stack>
               </CardContent>
             </Card>
