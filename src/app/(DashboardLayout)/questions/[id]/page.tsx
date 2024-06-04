@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, Card, CardContent, Chip, Divider, Grid, Stack, TextField, Typography } from "@mui/material"
+import { Button, Card, CardContent, Chip, Grid, Stack, TextField, Typography } from "@mui/material"
 import axios from "@/lib/axios"
 import { useMutation, useQuery } from "react-query"
 import TagsView from "../../components/tags/TagsView"
@@ -8,8 +8,10 @@ import { IconClockEdit, IconClockPlus, IconThumbDown, IconX } from "@tabler/icon
 import { IconUser } from "@tabler/icons-react"
 import { IconCheck } from "@tabler/icons-react"
 import { IconThumbUp } from "@tabler/icons-react"
+import { useRouter } from "next/navigation"
 const QuestionDetail = ({ params }: { params: { id: string } }) => {
   const id = params.id
+  const router = useRouter()
 
   const getToken = () => {
     const token = localStorage.getItem('token')
@@ -27,7 +29,7 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
     }
   })
 
-  const { data: userLoginQuery } = useQuery({
+  const { data: userLoginQuery, refetch: refetchUserLogin } = useQuery({
     queryKey: ['user-login-data'],
     queryFn: async () => {
       const response = await axios.get('/api/user')
@@ -41,6 +43,7 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
       const response = await axios.post('/api/forum/mark', values)
       if (response.status === 200) {
         refetchDetailForumQuery()
+        refetchUserLogin()
       }
 
       // return response.data
@@ -54,6 +57,7 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
       const response = await axios.post('/api/content/upvote', values)
       if (response.status === 200) {
         refetchDetailForumQuery()
+        refetchUserLogin()
       }
 
       // return response.data
@@ -67,6 +71,7 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
       const response = await axios.post('/api/content/downvote', values)
       if (response.status === 200) {
         refetchDetailForumQuery()
+        refetchUserLogin()
       }
 
       // return response.data
@@ -88,14 +93,41 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
   };
 
   const handleAnswered = (id: number | string, forumId: number | string) => {
+    if (!userLoginQuery) {
+      router.push('/authentication/login')
+      return
+    }
+    if (!getToken()) {
+      router.push('/authentication/login')
+      return
+    }
+
     mutateSolved({ content_id: id, forum_id: forumId })
   }
 
   const handleUpVote = (id: number | string, voteType: string) => {
+    if (!userLoginQuery) {
+      router.push('/authentication/login')
+      return
+    }
+    if (!getToken()) {
+      router.push('/authentication/login')
+      return
+    }
+
     mutateUpVote({ content_id: id, vote_type: voteType })
   }
 
   const handleDownVote = (id: number | string, voteType: string) => {
+    if (!userLoginQuery) {
+      router.push('/authentication/login')
+      return
+    }
+    if (!getToken()) {
+      router.push('/authentication/login')
+      return
+    }
+
     mutateDownVote({ content_id: id, vote_type: voteType })
   }
 
@@ -160,15 +192,23 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                                   </Button>
                                 </Grid>
                                 <Grid item>
-                                  <Button color="success" variant={content?.is_answer === 0 ? "outlined" : "contained"} size="small" onClick={() => handleAnswered(content.id, detailForumQuery.id)}>
-                                    {content?.is_answer === 0 ?
-                                      <>Terjawab ?</>
-                                      :
-                                      <>
-                                        Selesai <IconCheck size={15} />
-                                      </>
-                                    }
-                                  </Button>
+                                  {content?.is_answer === 0 ?
+                                    <>
+                                      {userLoginQuery?.id === detailForumQuery?.user_id ?
+                                        <>
+                                          {getToken() ?
+                                            <Button color="success" variant={content?.is_answer === 0 ? "outlined" : "contained"} size="small" onClick={() => handleAnswered(content.id, detailForumQuery.id)}>
+                                              Terjawab ?
+                                            </Button>
+                                            : null}
+                                        </>
+                                        : null}
+                                    </>
+                                    :
+                                    <Button color="success" variant={content?.is_answer === 0 ? "outlined" : "contained"} size="small" onClick={() => handleAnswered(content.id, detailForumQuery.id)}>
+                                      Selesai <IconCheck size={15} />
+                                    </Button>
+                                  }
                                 </Grid>
                               </Grid>
                             </Grid>
@@ -196,7 +236,7 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
           ))}
         </>
         : null}
-    </Grid>
+    </Grid >
   )
 }
 
