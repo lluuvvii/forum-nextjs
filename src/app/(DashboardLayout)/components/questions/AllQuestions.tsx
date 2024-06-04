@@ -82,10 +82,10 @@ const AllQuestions = () => {
                         <Typography>
                           <IconUser size={15} /> Pertanyaan saya : {userLoginQuery?.username}
                         </Typography>
-                        <Button color={question?.is_resolved === 0 ? "error" : "success"} variant="outlined" size="small">
+                        <Button color="success" variant={question?.is_resolved === 0 ? "outlined" : "contained"} size="small">
                           {question?.is_resolved === 0 ?
                             <>
-                              Belum selesai <IconX size={15} />
+                              Belum selesai
                             </>
                             :
                             <>
@@ -101,10 +101,10 @@ const AllQuestions = () => {
                         <Typography>
                           <IconUser size={15} /> {question?.user.username}
                         </Typography>
-                        <Button color={question?.is_resolved === 0 ? "error" : "success"} variant="outlined" size="small">
+                        <Button color="success" variant={question?.is_resolved === 0 ? "outlined" : "contained"} size="small">
                           {question?.is_resolved === 0 ?
                             <>
-                              Belum selesai <IconX size={15} />
+                              Belum selesai
                             </>
                             :
                             <>

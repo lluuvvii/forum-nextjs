@@ -2,7 +2,7 @@
 
 import { Button, Card, CardContent, Chip, Divider, Grid, Stack, TextField, Typography } from "@mui/material"
 import axios from "@/lib/axios"
-import { useQuery } from "react-query"
+import { useMutation, useQuery } from "react-query"
 import TagsView from "../../components/tags/TagsView"
 import { IconClockEdit, IconClockPlus, IconThumbDown, IconX } from "@tabler/icons-react"
 import { IconUser } from "@tabler/icons-react"
@@ -16,7 +16,7 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
     return token
   }
 
-  const { data: detailForumQuery, refetch: refetchForumQuery, isLoading: isLoadingForumQuery } = useQuery({
+  const { data: detailForumQuery, refetch: refetchDetailForumQuery, isLoading: isLoadingDetailForumQuery } = useQuery({
     queryKey: ['forum-detail', id],
     queryFn: async () => {
       const response = await axios.get(`/api/forum/${id}`)
@@ -36,6 +36,45 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
     }
   })
 
+  const { mutate: mutateSolved, isLoading: isLoadingSolved, error: isErrorSolved, isSuccess: isSuccessSolved } = useMutation(async (values: any) => {
+    try {
+      const response = await axios.post('/api/forum/mark', values)
+      if (response.status === 200) {
+        refetchDetailForumQuery()
+      }
+
+      // return response.data
+    } catch (err: any) {
+      throw new Error(err.response.data.message)
+    }
+  })
+
+  const { mutate: mutateUpVote, isLoading: isLoadingUpVote, error: isErrorUpVote, isSuccess: isSuccessUpVote } = useMutation(async (values: any) => {
+    try {
+      const response = await axios.post('/api/content/upvote', values)
+      if (response.status === 200) {
+        refetchDetailForumQuery()
+      }
+
+      // return response.data
+    } catch (err: any) {
+      throw new Error(err.response.data.message)
+    }
+  })
+
+  const { mutate: mutateDownVote, isLoading: isLoadingDownVote, error: isErrorDownVote, isSuccess: isSuccessDownVote } = useMutation(async (values: any) => {
+    try {
+      const response = await axios.post('/api/content/downvote', values)
+      if (response.status === 200) {
+        refetchDetailForumQuery()
+      }
+
+      // return response.data
+    } catch (err: any) {
+      throw new Error(err.response.data.message)
+    }
+  })
+
   const formatDate = (dateString: any) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('id-ID', {
@@ -47,6 +86,18 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
       minute: '2-digit',
     });
   };
+
+  const handleAnswered = (id: number | string, forumId: number | string) => {
+    mutateSolved({ content_id: id, forum_id: forumId })
+  }
+
+  const handleUpVote = (id: number | string, voteType: string) => {
+    mutateUpVote({ content_id: id, vote_type: voteType })
+  }
+
+  const handleDownVote = (id: number | string, voteType: string) => {
+    mutateDownVote({ content_id: id, vote_type: voteType })
+  }
 
   return (
     <Grid container spacing={1}>
@@ -63,12 +114,30 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                     <Grid container spacing={1}>
                       {content.user_id === detailForumQuery?.user_id ?
                         <Grid item xs={12}>
-                          <Typography>
-                            <IconUser size={15} /> {content?.user?.username}
-                          </Typography>
-                          <Chip label={formatDate(content?.updated_at)} size="small" sx={{ color: "#bdad00", border: 'none' }} variant="outlined" icon={<IconClockEdit size={15} color='#bdad00' />} />
-                          <Chip label={formatDate(content?.created_at)} size="small" sx={{ color: "#078500", border: 'none' }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
-                          <Typography variant='h3' sx={{ mb: 1, wordBreak: 'break-word' }}>
+                          <Grid container spacing={1} justifyContent='space-between'>
+                            <Grid item>
+                              <Typography>
+                                <IconUser size={15} /> {content?.user?.username}
+                              </Typography>
+                              <Chip label={formatDate(content?.updated_at)} size="small" sx={{ color: "#bdad00", border: 'none' }} variant="outlined" icon={<IconClockEdit size={15} color='#bdad00' />} />
+                              <Chip label={formatDate(content?.created_at)} size="small" sx={{ color: "#078500", border: 'none' }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
+                            </Grid>
+                            <Grid item>
+                              <Grid container spacing={1}>
+                                <Grid item>
+                                  <Button color="primary" variant="outlined" size="small" onClick={() => handleUpVote(content.id, "up")}>
+                                    {content?.up_votes.length} <IconThumbUp size={15} />
+                                  </Button>
+                                </Grid>
+                                <Grid item>
+                                  <Button color="error" variant="outlined" size="small" onClick={() => handleDownVote(content.id, "down")}>
+                                    <IconThumbDown size={15} /> {content?.down_votes.length}
+                                  </Button>
+                                </Grid>
+                              </Grid>
+                            </Grid>
+                          </Grid>
+                          <Typography variant='h3' sx={{ mt: 1, wordBreak: 'break-word' }}>
                             {detailForumQuery?.title}
                           </Typography>
                         </Grid>
@@ -78,33 +147,31 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                             <Typography variant='h3' sx={{ mb: 1 }}>
                               Jawaban
                             </Typography>
-                            {userLoginQuery?.id === detailForumQuery?.user_id && getToken() ?
-                              <Grid item>
-                                <Grid container spacing={1}>
-                                  <Grid item>
-                                    <Button color="primary" variant="outlined" size="small">
-                                      {content?.up_votes.length} <IconThumbUp size={15} />
-                                    </Button>
-                                  </Grid>
-                                  <Grid item>
-                                    <Button color="error" variant="outlined" size="small">
-                                      <IconThumbDown size={15} /> {content?.down_votes.length}
-                                    </Button>
-                                  </Grid>
-                                  <Grid item>
-                                    <Button color={content?.is_answer === 1 ? "error" : "success"} variant="outlined" size="small">
-                                      {content?.is_answer === 1 ?
-                                        <>Tandai sebagai selesai</>
-                                        :
-                                        <>
-                                          Selesai <IconCheck size={15} />
-                                        </>
-                                      }
-                                    </Button>
-                                  </Grid>
+                            <Grid item>
+                              <Grid container spacing={1}>
+                                <Grid item>
+                                  <Button color="primary" variant="outlined" size="small" onClick={() => handleUpVote(content.id, "up")}>
+                                    {content?.up_votes.length} <IconThumbUp size={15} />
+                                  </Button>
+                                </Grid>
+                                <Grid item>
+                                  <Button color="error" variant="outlined" size="small" onClick={() => handleDownVote(content.id, "down")}>
+                                    <IconThumbDown size={15} /> {content?.down_votes.length}
+                                  </Button>
+                                </Grid>
+                                <Grid item>
+                                  <Button color="success" variant={content?.is_answer === 0 ? "outlined" : "contained"} size="small" onClick={() => handleAnswered(content.id, detailForumQuery.id)}>
+                                    {content?.is_answer === 0 ?
+                                      <>Terjawab ?</>
+                                      :
+                                      <>
+                                        Selesai <IconCheck size={15} />
+                                      </>
+                                    }
+                                  </Button>
                                 </Grid>
                               </Grid>
-                              : null}
+                            </Grid>
                           </Grid>
                           <Typography>
                             <IconUser size={15} /> {content?.user?.username}
