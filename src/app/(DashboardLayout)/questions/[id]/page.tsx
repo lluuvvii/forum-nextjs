@@ -337,32 +337,30 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                         </form>
                       </Grid>
                       <Grid item xs={12}>
-                        <Card variant='outlined'>
-                          <CardContent>
-                            <Box sx={{ width: '100%', maxHeight: 360, overflowY: 'auto' }} >
-                              {content.comments?.map((comment: any, index: number) => (
-                                <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
-                                  <TextField
-                                    key={index}
-                                    multiline
-                                    id="outlined-read-only-input"
-                                    defaultValue=""
-                                    value={`lluuvvii : ${comment?.comment_value}`}
-                                    InputProps={{
-                                      readOnly: true,
-                                    }}
-                                    variant="outlined"
-                                    fullWidth
-                                  />
-                                  <Stack direction="column" spacing={1}>
-                                    <Button variant='outlined' size="small" color="success"><IconEdit size={15} /></Button>
-                                    <Button variant='outlined' size="small" color="error"><IconEraser size={15} /></Button>
-                                  </Stack>
+                        {content.comments?.map((comment: any, index: number) => (
+                          <Box sx={{ width: '100%', maxHeight: 360, overflowY: 'auto' }} key={index}>
+                            {comment ?
+                              <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
+                                <TextField
+                                  key={index}
+                                  multiline
+                                  id="outlined-read-only-input"
+                                  defaultValue=""
+                                  value={`lluuvvii : ${comment?.comment_value}`}
+                                  InputProps={{
+                                    readOnly: true,
+                                  }}
+                                  variant="outlined"
+                                  fullWidth
+                                />
+                                <Stack direction="column" spacing={1}>
+                                  <Button variant='outlined' size="small" color="success"><IconEdit size={15} /></Button>
+                                  <Button variant='outlined' size="small" color="error"><IconEraser size={15} /></Button>
                                 </Stack>
-                              ))}
-                            </Box>
-                          </CardContent>
-                        </Card>
+                              </Stack>
+                              : null}
+                          </Box>
+                        ))}
                       </Grid>
                     </Grid>
                   </Stack>
