@@ -1,23 +1,50 @@
 'use client'
 
-import { Button, Card, CardContent, Chip, Grid, Stack, TextField, Typography } from "@mui/material"
+import { useState } from 'react'
+import { Box, Button, Card, CardContent, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, ListItem, ListItemButton, ListItemText, Stack, TextField, Typography } from "@mui/material"
 import axios from "@/lib/axios"
 import { useMutation, useQuery } from "react-query"
 import TagsView from "../../components/tags/TagsView"
-import { IconClockEdit, IconClockPlus, IconThumbDown, IconX } from "@tabler/icons-react"
+import { IconClockEdit, IconClockPlus, IconThumbDown } from "@tabler/icons-react"
 import { IconUser } from "@tabler/icons-react"
 import { IconCheck } from "@tabler/icons-react"
 import { IconThumbUp } from "@tabler/icons-react"
 import { useRouter } from "next/navigation"
+import SendIcon from '@mui/icons-material/Send'
+import * as Yup from 'yup'
+import { useFormik } from 'formik'
+import DashboardCard from '../../components/shared/DashboardCard'
+import { IconEdit } from '@tabler/icons-react'
+
+const validationSchema = Yup.object({
+  comment_value: Yup.string().required('Komentar tidak boleh kosong')
+})
+
 const QuestionDetail = ({ params }: { params: { id: string } }) => {
   const id = params.id
   const router = useRouter()
+  const [openComment, setOpenComment] = useState(false)
+  const [contentId, setContentId] = useState('')
 
   const getToken = () => {
     const token = localStorage.getItem('token')
     return token
   }
 
+  const formikComment = useFormik({
+    initialValues: {
+      comment_value: '',
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values, { resetForm }) => {
+      mutateComment({ comment_value: values.comment_value, content_id: contentId })
+      // resetForm();
+      console.log({ comment_value: values.comment_value, content_id: contentId })
+      resetForm()
+    },
+  });
+
+  // get query
   const { data: detailForumQuery, refetch: refetchDetailForumQuery, isLoading: isLoadingDetailForumQuery } = useQuery({
     queryKey: ['forum-detail', id],
     queryFn: async () => {
@@ -38,6 +65,7 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
     }
   })
 
+  // post query
   const { mutate: mutateSolved, isLoading: isLoadingSolved, error: isErrorSolved, isSuccess: isSuccessSolved } = useMutation(async (values: any) => {
     try {
       const response = await axios.post('/api/forum/mark', values)
@@ -80,6 +108,20 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
     }
   })
 
+  const { mutate: mutateComment, isLoading: isLoadingComment, error: isErrorComment, isSuccess: isSuccessComment } = useMutation(async (values: any) => {
+    try {
+      const response = await axios.post('/api/comment', values)
+      if (response.status === 200) {
+        refetchDetailForumQuery()
+        refetchUserLogin()
+      }
+
+      // return response.data
+    } catch (err: any) {
+      throw new Error(err.response.data.message)
+    }
+  })
+
   const formatDate = (dateString: any) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('id-ID', {
@@ -90,8 +132,9 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
       hour: '2-digit',
       minute: '2-digit',
     });
-  };
+  }
 
+  // handler
   const handleAnswered = (id: number | string, forumId: number | string) => {
     if (!userLoginQuery) {
       router.push('/authentication/login')
@@ -131,10 +174,29 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
     mutateDownVote({ content_id: id, vote_type: voteType })
   }
 
+  // const handleCommentSubmit = (event: React.FormEvent) => {
+  //   event.preventDefault()
+  //   if (!userLoginQuery) {
+  //     router.push('/authentication/login')
+  //     return
+  //   }
+  //   if (!getToken()) {
+  //     router.push('/authentication/login')
+  //     return
+  //   }
+
+  //   mutateComment({ content_id: id, comment_value: '' })
+  // }
+
+  const handleCommentClick = () => {
+    setOpenComment(!openComment)
+  }
+
   return (
     <Grid container spacing={1}>
       {detailForumQuery ?
         <>
+          {/* {detailForumQuery ? } */}
           {detailForumQuery?.contents?.map((content: any, index: any) => (
             <Grid key={index} item xs={12}>
               <Card variant='outlined'>
@@ -147,13 +209,9 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                       {content.user_id === detailForumQuery?.user_id ?
                         <Grid item xs={12}>
                           <Grid container spacing={1} justifyContent='space-between'>
-                            <Grid item>
-                              <Typography>
-                                <IconUser size={15} /> {content?.user?.username}
-                              </Typography>
-                              <Chip label={formatDate(content?.updated_at)} size="small" sx={{ color: "#bdad00", border: 'none' }} variant="outlined" icon={<IconClockEdit size={15} color='#bdad00' />} />
-                              <Chip label={formatDate(content?.created_at)} size="small" sx={{ color: "#078500", border: 'none' }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
-                            </Grid>
+                            <Typography variant='h6' sx={{ mb: 1 }}>
+                              Pertanyaan
+                            </Typography>
                             <Grid item>
                               <Grid container spacing={1}>
                                 <Grid item>
@@ -169,14 +227,21 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                               </Grid>
                             </Grid>
                           </Grid>
-                          <Typography variant='h3' sx={{ mt: 1, wordBreak: 'break-word' }}>
+                          <Grid item>
+                            <Typography>
+                              <IconUser size={15} /> {content?.user?.username}
+                            </Typography>
+                            <Chip label={formatDate(content?.updated_at)} size="small" sx={{ color: "#bdad00", border: 'none' }} variant="outlined" icon={<IconClockEdit size={15} color='#bdad00' />} />
+                            <Chip label={formatDate(content?.created_at)} size="small" sx={{ color: "#078500", border: 'none' }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
+                          </Grid>
+                          <Typography variant='h4' sx={{ mt: 1, wordBreak: 'break-word' }}>
                             {detailForumQuery?.title}
                           </Typography>
                         </Grid>
                         :
                         <Grid item xs={12}>
                           <Grid container justifyContent='space-between'>
-                            <Typography variant='h3' sx={{ mb: 1 }}>
+                            <Typography variant='h6' sx={{ mb: 1 }}>
                               Jawaban
                             </Typography>
                             <Grid item>
@@ -226,7 +291,76 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                           : null}
                       </Grid>
                       <Grid item xs={12}>
-                        <TextField variant='outlined' fullWidth placeholder='Tambahkan Komentar' size='small' />
+                        <Divider orientation='horizontal' sx={{ mb: 2 }} flexItem />
+                        <form onSubmit={formikComment.handleSubmit}>
+                          <Box sx={{ display: 'flex', gap: 1 }}>
+                            <Button variant="contained" onClick={() => {
+                              handleCommentClick()
+                              setContentId(content.id)
+                            }} size="small" fullWidth>
+                              Tambahkan Komentar
+                            </Button>
+                            <Dialog
+                              open={openComment}
+                              onClose={handleCommentClick}
+                              PaperProps={{
+                                component: 'form',
+                                onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                                  event.preventDefault();
+                                  const formData = new FormData(event.currentTarget);
+                                  const formJson = Object.fromEntries((formData as any).entries());
+                                  handleCommentClick()
+                                },
+                              }}
+                            >
+                              <DialogTitle>Tambahkan komentar anda</DialogTitle>
+                              <DialogContent>
+                                <TextField
+                                  margin="dense"
+                                  id="comment_value"
+                                  name="comment_value"
+                                  label="Komentar"
+                                  fullWidth
+                                  variant="standard"
+                                  onChange={formikComment.handleChange}
+                                  value={formikComment.values.comment_value}
+                                  error={formikComment.touched.comment_value && Boolean(formikComment.errors.comment_value)}
+                                  helperText={formikComment.touched.comment_value && formikComment.errors.comment_value}
+                                />
+                              </DialogContent>
+                              <DialogActions>
+                                <Button onClick={handleCommentClick}>Batal</Button>
+                                <Button type="submit">Kirim</Button>
+                              </DialogActions>
+                            </Dialog>
+                          </Box>
+                        </form>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Card variant='outlined'>
+                          <CardContent>
+                            <Box sx={{ width: '100%', maxHeight: 360, overflowY: 'auto' }} >
+                              {content.comments?.map((comment: any, index: number) => (
+                                <>
+                                  <TextField
+                                    key={index}
+                                    multiline
+                                    id="outlined-read-only-input"
+                                    defaultValue=""
+                                    value={comment.comment_value}
+                                    InputProps={{
+                                      readOnly: true,
+                                    }}
+                                    variant="outlined"
+                                    fullWidth
+                                  />
+                                  <Button variant='outlined' size="small" color="success"><IconEdit size={15} /></Button>
+                                  <Divider orientation='horizontal' sx={{ mb: 1, mt: 1 }} flexItem />
+                                </>
+                              ))}
+                            </Box>
+                          </CardContent>
+                        </Card>
                       </Grid>
                     </Grid>
                   </Stack>
