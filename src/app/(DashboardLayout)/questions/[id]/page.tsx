@@ -5,7 +5,7 @@ import { Box, Button, Card, CardContent, Chip, Dialog, DialogActions, DialogCont
 import axios from "@/lib/axios"
 import { useMutation, useQuery } from "react-query"
 import TagsView from "../../components/tags/TagsView"
-import { IconClockEdit, IconClockPlus, IconThumbDown } from "@tabler/icons-react"
+import { IconClockEdit, IconClockPlus, IconEraser, IconThumbDown } from "@tabler/icons-react"
 import { IconUser } from "@tabler/icons-react"
 import { IconCheck } from "@tabler/icons-react"
 import { IconThumbUp } from "@tabler/icons-react"
@@ -341,22 +341,24 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                           <CardContent>
                             <Box sx={{ width: '100%', maxHeight: 360, overflowY: 'auto' }} >
                               {content.comments?.map((comment: any, index: number) => (
-                                <>
+                                <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
                                   <TextField
                                     key={index}
                                     multiline
                                     id="outlined-read-only-input"
                                     defaultValue=""
-                                    value={comment.comment_value}
+                                    value={`lluuvvii : ${comment?.comment_value}`}
                                     InputProps={{
                                       readOnly: true,
                                     }}
                                     variant="outlined"
                                     fullWidth
                                   />
-                                  <Button variant='outlined' size="small" color="success"><IconEdit size={15} /></Button>
-                                  <Divider orientation='horizontal' sx={{ mb: 1, mt: 1 }} flexItem />
-                                </>
+                                  <Stack direction="column" spacing={1}>
+                                    <Button variant='outlined' size="small" color="success"><IconEdit size={15} /></Button>
+                                    <Button variant='outlined' size="small" color="error"><IconEraser size={15} /></Button>
+                                  </Stack>
+                                </Stack>
                               ))}
                             </Box>
                           </CardContent>
