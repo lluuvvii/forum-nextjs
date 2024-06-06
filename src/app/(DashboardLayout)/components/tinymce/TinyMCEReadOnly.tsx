@@ -35,12 +35,9 @@ const TinyMCEReadOnly = ({ value }: any) => {
       <Editor
         apiKey={process.env.NEXT_PUBLIC_API_KEY}
         disabled={true}
-        readonly={true}
         init={{
           menubar: false,
           toolbar: false,
-          selector: "#editor",
-          readonly: 1,
           noneditable_class: 'nonedit',
           resize: false,
           setup: (editor) => {
