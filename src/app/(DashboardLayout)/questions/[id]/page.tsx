@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Box, Button, Card, CardContent, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, Stack, TextField, Typography } from "@mui/material"
+import { Box, Button, Card, CardContent, Chip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Grid, Stack, TextField, Typography } from "@mui/material"
 import axios from "@/lib/axios"
 import { useMutation, useQuery } from "react-query"
 import TagsView from "../../components/tags/TagsView"
@@ -27,10 +27,11 @@ const commentUpdateSchema = Yup.object({
 const QuestionDetail = ({ params }: { params: { id: string } }) => {
   const id = params.id
   const router = useRouter()
-  const [openComment, setOpenComment] = useState(false)
   const [contentId, setContentId] = useState('')
-  const [openUpdateComment, setOpenUpdateComment] = useState(false)
   const [commentId, setCommentId] = useState('')
+  const [openComment, setOpenComment] = useState(false)
+  const [openUpdateComment, setOpenUpdateComment] = useState(false)
+  const [openDeleteComment, setOpenDeleteComment] = useState(false)
 
   const getToken = () => {
     const token = localStorage.getItem('token')
@@ -151,6 +152,20 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
     }
   })
 
+  const { mutate: mutateDeleteComment, isLoading: isLoadingDeleteComment, error: isErrorDeleteComment, isSuccess: isSuccessDeleteComment } = useMutation(async (values: any) => {
+    try {
+      const response = await axios.delete(`/api/comment/${values}`)
+      if (response.status === 200) {
+        refetchDetailForumQuery()
+        refetchUserLogin()
+      }
+
+      // return response.data
+    } catch (err: any) {
+      throw new Error(err.response.data.message)
+    }
+  })
+
   const formatDate = (dateString: any) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('id-ID', {
@@ -209,6 +224,11 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
 
   const handleUpdateCommentClick = () => {
     setOpenUpdateComment(!openUpdateComment)
+  }
+
+  const handleDeleteCommentClick = () => {
+    // setOpenUpdateComment(!openUpdateComment)
+    setOpenDeleteComment(!openDeleteComment)
   }
 
   return (
@@ -412,7 +432,10 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                                               handleUpdateCommentClick()
                                               setCommentId(comment.id)
                                             }}><IconEdit size={15} /></Button>
-                                            <Button variant='outlined' size="small" color="error"><IconEraser size={15} /></Button>
+                                            <Button variant='outlined' size="small" color="error" onClick={() => {
+                                              handleDeleteCommentClick()
+                                              setCommentId(comment.id)
+                                            }}><IconEraser size={15} /></Button>
                                             <Dialog
                                               open={openUpdateComment}
                                               onClose={handleUpdateCommentClick}
@@ -444,6 +467,30 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                                               <DialogActions>
                                                 <Button onClick={handleUpdateCommentClick}>Batal</Button>
                                                 <Button type="submit">Kirim</Button>
+                                              </DialogActions>
+                                            </Dialog>
+                                            <Dialog
+                                              open={openDeleteComment}
+                                              onClose={handleDeleteCommentClick}
+                                              aria-labelledby="alert-dialog-title"
+                                              aria-describedby="alert-dialog-description"
+                                            >
+                                              <DialogTitle id="alert-dialog-title">
+                                                {"Hapus Komentar ?"}
+                                              </DialogTitle>
+                                              <DialogContent>
+                                                <DialogContentText id="alert-dialog-description">
+                                                  Komentar yang anda pilih akan dihapus secara permanen
+                                                </DialogContentText>
+                                              </DialogContent>
+                                              <DialogActions>
+                                                <Button onClick={handleDeleteCommentClick}>Batal</Button>
+                                                <Button onClick={() => {
+                                                  mutateDeleteComment(commentId)
+                                                  handleDeleteCommentClick()
+                                                }} autoFocus>
+                                                  Hapus
+                                                </Button>
                                               </DialogActions>
                                             </Dialog>
                                           </Stack>
