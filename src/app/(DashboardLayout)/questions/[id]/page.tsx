@@ -10,12 +10,11 @@ import { IconUser } from "@tabler/icons-react"
 import { IconCheck } from "@tabler/icons-react"
 import { IconThumbUp } from "@tabler/icons-react"
 import { useRouter } from "next/navigation"
-import SendIcon from '@mui/icons-material/Send'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
-import DashboardCard from '../../components/shared/DashboardCard'
 import { IconEdit } from '@tabler/icons-react'
 import TinyMCEReadOnly from '../../components/tinymce/TinyMCEReadOnly'
+import ContentForm from '../../components/contentUpload/ContentForm'
 
 const validationSchema = Yup.object({
   comment_value: Yup.string().required('Komentar tidak boleh kosong')
@@ -26,6 +25,7 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
   const router = useRouter()
   const [openComment, setOpenComment] = useState(false)
   const [contentId, setContentId] = useState('')
+  const [enableForm, setEnableForm] = useState(false)
 
   const getToken = () => {
     const token = localStorage.getItem('token')
@@ -183,7 +183,11 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
     <Grid container spacing={1}>
       {detailForumQuery ?
         <>
-          {/* {detailForumQuery ? } */}
+          {detailForumQuery?.user_id !== userLoginQuery?.id ?
+            <Grid item>
+              <ContentForm forumId={detailForumQuery.id} refetchDetailForumQuery={refetchDetailForumQuery} />
+            </Grid>
+            : null}
           {detailForumQuery?.contents?.map((content: any, index: any) => (
             <Grid key={index} item xs={12}>
               <Card variant='outlined'>
