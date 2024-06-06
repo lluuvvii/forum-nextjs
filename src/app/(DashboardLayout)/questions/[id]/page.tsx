@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Box, Button, Card, CardContent, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, ListItem, ListItemButton, ListItemText, Stack, TextField, Typography } from "@mui/material"
+import { Box, Button, Card, CardContent, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, Stack, TextField, Typography } from "@mui/material"
 import axios from "@/lib/axios"
 import { useMutation, useQuery } from "react-query"
 import TagsView from "../../components/tags/TagsView"
@@ -20,12 +20,17 @@ const validationSchema = Yup.object({
   comment_value: Yup.string().required('Komentar tidak boleh kosong')
 })
 
+const commentUpdateSchema = Yup.object({
+  comment_update_value: Yup.string().required('Komentar tidak boleh kosong')
+})
+
 const QuestionDetail = ({ params }: { params: { id: string } }) => {
   const id = params.id
   const router = useRouter()
   const [openComment, setOpenComment] = useState(false)
   const [contentId, setContentId] = useState('')
-  const [enableForm, setEnableForm] = useState(false)
+  const [openUpdateComment, setOpenUpdateComment] = useState(false)
+  const [commentId, setCommentId] = useState('')
 
   const getToken = () => {
     const token = localStorage.getItem('token')
@@ -39,11 +44,20 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
     validationSchema: validationSchema,
     onSubmit: (values, { resetForm }) => {
       mutateComment({ comment_value: values.comment_value, content_id: contentId })
-      // resetForm();
-      console.log({ comment_value: values.comment_value, content_id: contentId })
       resetForm()
     },
-  });
+  })
+
+  const formikUpdateComment = useFormik({
+    initialValues: {
+      comment_update_value: '',
+    },
+    validationSchema: commentUpdateSchema,
+    onSubmit: (values, { resetForm }) => {
+      mutateUpdateComment({ comment_value: values.comment_update_value })
+      resetForm()
+    },
+  })
 
   // get query
   const { data: detailForumQuery, refetch: refetchDetailForumQuery, isLoading: isLoadingDetailForumQuery } = useQuery({
@@ -123,6 +137,20 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
     }
   })
 
+  const { mutate: mutateUpdateComment, isLoading: isLoadingUpdateComment, error: isErrorUpdateComment, isSuccess: isSuccessUpdateComment } = useMutation(async (values: any) => {
+    try {
+      const response = await axios.put(`/api/comment/${commentId}`, values)
+      if (response.status === 200) {
+        refetchDetailForumQuery()
+        refetchUserLogin()
+      }
+
+      // return response.data
+    } catch (err: any) {
+      throw new Error(err.response.data.message)
+    }
+  })
+
   const formatDate = (dateString: any) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('id-ID', {
@@ -177,6 +205,10 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
 
   const handleCommentClick = () => {
     setOpenComment(!openComment)
+  }
+
+  const handleUpdateCommentClick = () => {
+    setOpenUpdateComment(!openUpdateComment)
   }
 
   return (
@@ -265,7 +297,11 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                                         : null}
                                     </>
                                     :
-                                    <Button color="success" variant={content?.is_answer === 0 ? "outlined" : "contained"} size="small" onClick={() => handleAnswered(content.id, detailForumQuery.id)}>
+                                    <Button color="success" variant={content?.is_answer === 0 ? "outlined" : "contained"} size="small" onClick={() => {
+                                      if (getToken() && userLoginQuery?.id === detailForumQuery?.user_id) {
+                                        handleAnswered(content.id, detailForumQuery.id)
+                                      }
+                                    }}>
                                       Selesai <IconCheck size={15} />
                                     </Button>
                                   }
@@ -280,7 +316,21 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                           <Chip label={formatDate(content?.created_at)} size="small" sx={{ color: "#078500", border: 'none' }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
                         </Grid>}
                       <Grid item xs={12}>
-                        <TinyMCEReadOnly value={content?.content_value} />
+                        <Stack direction="row" spacing={1}>
+                          <Grid item xs={12}>
+                            <TinyMCEReadOnly value={content?.content_value} />
+                          </Grid>
+                          {userLoginQuery?.id === content.user_id ?
+                            <>
+                              {getToken() ?
+                                <Stack direction="column" spacing={1}>
+                                  <Button variant='outlined' size="small" color="success"><IconEdit size={15} /></Button>
+                                  <Button variant='outlined' size="small" color="error"><IconEraser size={15} /></Button>
+                                </Stack>
+                                : null}
+                            </>
+                            : null}
+                        </Stack>
                         {content.user_id === detailForumQuery?.user_id ?
                           <TagsView tags={detailForumQuery?.forum_tags} />
                           : null}
@@ -290,8 +340,12 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                         <form onSubmit={formikComment.handleSubmit}>
                           <Box sx={{ display: 'flex', gap: 1 }}>
                             <Button variant="contained" onClick={() => {
-                              handleCommentClick()
-                              setContentId(content.id)
+                              if (getToken()) {
+                                handleCommentClick()
+                                setContentId(content.id)
+                                return
+                              }
+                              router.push('/authentication/login')
                             }} size="small" fullWidth>
                               Tambahkan Komentar
                             </Button>
@@ -349,10 +403,54 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                                     variant="outlined"
                                     fullWidth
                                   />
-                                  <Stack direction="column" spacing={1}>
-                                    <Button variant='outlined' size="small" color="success"><IconEdit size={15} /></Button>
-                                    <Button variant='outlined' size="small" color="error"><IconEraser size={15} /></Button>
-                                  </Stack>
+                                  {userLoginQuery?.id === comment.user_id ?
+                                    <>
+                                      {getToken() ?
+                                        <form onSubmit={formikUpdateComment.handleSubmit}>
+                                          <Stack direction="column" spacing={1}>
+                                            <Button variant='outlined' size="small" color="success" onClick={() => {
+                                              handleUpdateCommentClick()
+                                              setCommentId(comment.id)
+                                            }}><IconEdit size={15} /></Button>
+                                            <Button variant='outlined' size="small" color="error"><IconEraser size={15} /></Button>
+                                            <Dialog
+                                              open={openUpdateComment}
+                                              onClose={handleUpdateCommentClick}
+                                              PaperProps={{
+                                                component: 'form',
+                                                onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                                                  event.preventDefault();
+                                                  const formData = new FormData(event.currentTarget);
+                                                  const formJson = Object.fromEntries((formData as any).entries());
+                                                  handleUpdateCommentClick()
+                                                },
+                                              }}
+                                            >
+                                              <DialogTitle>Edit komentar anda</DialogTitle>
+                                              <DialogContent>
+                                                <TextField
+                                                  margin="dense"
+                                                  id="comment_update_value"
+                                                  name="comment_update_value"
+                                                  label="Komentar"
+                                                  fullWidth
+                                                  variant="standard"
+                                                  onChange={formikUpdateComment.handleChange}
+                                                  value={formikUpdateComment.values.comment_update_value}
+                                                  error={formikUpdateComment.touched.comment_update_value && Boolean(formikUpdateComment.errors.comment_update_value)}
+                                                  helperText={formikUpdateComment.touched.comment_update_value && formikUpdateComment.errors.comment_update_value}
+                                                />
+                                              </DialogContent>
+                                              <DialogActions>
+                                                <Button onClick={handleUpdateCommentClick}>Batal</Button>
+                                                <Button type="submit">Kirim</Button>
+                                              </DialogActions>
+                                            </Dialog>
+                                          </Stack>
+                                        </form>
+                                        : null}
+                                    </>
+                                    : null}
                                 </Stack>
                                 : null}
                             </div>
