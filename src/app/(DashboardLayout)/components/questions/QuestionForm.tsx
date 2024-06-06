@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { Grid, Button, TextField, CardContent, Card, Stack, Divider, Collapse, Typography, Snackbar, Alert } from '@mui/material'
 import DashboardCard from '../shared/DashboardCard'
 import axios from '@/lib/axios'
+import Axios from 'axios'
 
 import { useMutation, useQuery } from "react-query"
 import TinyMCEEditor from '../tinymce/TinyMCEEditor'
@@ -93,15 +94,20 @@ const QuestionForm = () => {
       'upload_preset',
       'forum_image_upload'
     )
-    formData.append('folder', 'forum_nextjs')
-    const response = await axios.post('https://api.cloudinary.com/v1_1/dbzjr3io4/image/upload', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    })
-    const data = await response.data.url
-    success(data)
-    return data
+    try {
+      const response = await Axios.post('https://api.cloudinary.com/v1_1/dbzjr3io4/image/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+
+      const data = await response.data.secure_url
+      success(data)
+      return data
+    } catch (err) {
+      console.error('Error uploading image : ', err)
+      throw err
+    }
   }
 
   const handleCancel = () => {

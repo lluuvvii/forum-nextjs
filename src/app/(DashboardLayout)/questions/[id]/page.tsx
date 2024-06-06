@@ -15,6 +15,7 @@ import * as Yup from 'yup'
 import { useFormik } from 'formik'
 import DashboardCard from '../../components/shared/DashboardCard'
 import { IconEdit } from '@tabler/icons-react'
+import TinyMCEReadOnly from '../../components/tinymce/TinyMCEReadOnly'
 
 const validationSchema = Yup.object({
   comment_value: Yup.string().required('Komentar tidak boleh kosong')
@@ -174,20 +175,6 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
     mutateDownVote({ content_id: id, vote_type: voteType })
   }
 
-  // const handleCommentSubmit = (event: React.FormEvent) => {
-  //   event.preventDefault()
-  //   if (!userLoginQuery) {
-  //     router.push('/authentication/login')
-  //     return
-  //   }
-  //   if (!getToken()) {
-  //     router.push('/authentication/login')
-  //     return
-  //   }
-
-  //   mutateComment({ content_id: id, comment_value: '' })
-  // }
-
   const handleCommentClick = () => {
     setOpenComment(!openComment)
   }
@@ -262,9 +249,13 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                                       {userLoginQuery?.id === detailForumQuery?.user_id ?
                                         <>
                                           {getToken() ?
-                                            <Button color="success" variant={content?.is_answer === 0 ? "outlined" : "contained"} size="small" onClick={() => handleAnswered(content.id, detailForumQuery.id)}>
-                                              Terjawab ?
-                                            </Button>
+                                            <>
+                                              {!detailForumQuery.is_resolved ?
+                                                <Button color="success" variant={content?.is_answer === 0 ? "outlined" : "contained"} size="small" onClick={() => handleAnswered(content.id, detailForumQuery.id)}>
+                                                  Terjawab ?
+                                                </Button>
+                                                : null}
+                                            </>
                                             : null}
                                         </>
                                         : null}
@@ -285,7 +276,7 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                           <Chip label={formatDate(content?.created_at)} size="small" sx={{ color: "#078500", border: 'none' }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
                         </Grid>}
                       <Grid item xs={12}>
-                        <div dangerouslySetInnerHTML={{ __html: content?.content_value }} />
+                        <TinyMCEReadOnly value={content?.content_value} />
                         {content.user_id === detailForumQuery?.user_id ?
                           <TagsView tags={detailForumQuery?.forum_tags} />
                           : null}
@@ -337,30 +328,32 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                         </form>
                       </Grid>
                       <Grid item xs={12}>
-                        {content.comments?.map((comment: any, index: number) => (
-                          <Box sx={{ width: '100%', maxHeight: 360, overflowY: 'auto' }} key={index}>
-                            {comment ?
-                              <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
-                                <TextField
-                                  key={index}
-                                  multiline
-                                  id="outlined-read-only-input"
-                                  defaultValue=""
-                                  value={`lluuvvii : ${comment?.comment_value}`}
-                                  InputProps={{
-                                    readOnly: true,
-                                  }}
-                                  variant="outlined"
-                                  fullWidth
-                                />
-                                <Stack direction="column" spacing={1}>
-                                  <Button variant='outlined' size="small" color="success"><IconEdit size={15} /></Button>
-                                  <Button variant='outlined' size="small" color="error"><IconEraser size={15} /></Button>
+                        <Box sx={{ width: '100%', maxHeight: 300, overflowY: 'auto' }}>
+                          {content.comments?.map((comment: any, index: number) => (
+                            <div key={index}>
+                              {comment ?
+                                <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
+                                  <TextField
+                                    key={index}
+                                    multiline
+                                    id="outlined-read-only-input"
+                                    defaultValue=""
+                                    value={`${comment?.user.username} : ${comment?.comment_value}`}
+                                    InputProps={{
+                                      readOnly: true,
+                                    }}
+                                    variant="outlined"
+                                    fullWidth
+                                  />
+                                  <Stack direction="column" spacing={1}>
+                                    <Button variant='outlined' size="small" color="success"><IconEdit size={15} /></Button>
+                                    <Button variant='outlined' size="small" color="error"><IconEraser size={15} /></Button>
+                                  </Stack>
                                 </Stack>
-                              </Stack>
-                              : null}
-                          </Box>
-                        ))}
+                                : null}
+                            </div>
+                          ))}
+                        </Box>
                       </Grid>
                     </Grid>
                   </Stack>
