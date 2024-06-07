@@ -40,6 +40,24 @@ const UserProfile = () => {
 
   return (
     <DashboardCard title="Profil" subtitle="Data Pribadi anda">
+      <>
+        {isLoadingUserDetailQuery && (
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="100%"
+            width="100%"
+            // position="absolute"
+            top={0}
+            left={0}
+            bgcolor="rgba(255, 255, 255, 0.8)"
+          // zIndex={1}
+          >
+            <CircularProgress />
+          </Box>
+        )}
+      </>
       <Collapse in={isSuccessUserDetailQuery} timeout={1000}>
         <Box sx={{ height: { xs: 350, md: 200 }, maxHeight: { xs: 400, md: 200 }, overflowY: 'auto' }}>
           {isLoadingUserDetailQuery && (

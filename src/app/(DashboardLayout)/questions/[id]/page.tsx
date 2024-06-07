@@ -242,7 +242,7 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
           </Grid>
         </Grid>
         : null}
-      <DashboardCard title="Kontent Forum">
+      <DashboardCard title="Konten Forum">
         <>
           {isLoadingDetailForumQuery && (
             <Box
@@ -362,16 +362,16 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                                   <Chip label={formatDate(content?.created_at)} size="small" sx={{ color: "#078500", border: 'none' }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
                                 </Grid>}
                               <Grid item xs={12}>
-                                <Stack direction="row" spacing={1}>
+                                <Stack direction="column" spacing={1}>
                                   <Grid item xs={12}>
                                     <TinyMCEReadOnly value={content?.content_value} />
                                   </Grid>
                                   {userLoginQuery?.id === content.user_id ?
                                     <>
                                       {getToken() ?
-                                        <Stack direction="column" spacing={1}>
-                                          <Button variant='outlined' size="small" color="success"><IconEdit size={15} /></Button>
-                                          <Button variant='outlined' size="small" color="error"><IconEraser size={15} /></Button>
+                                        <Stack direction="row" spacing={1}>
+                                          <Button variant='outlined' size="small" color="success"><IconEdit size={15} /> Edit Jawaban</Button>
+                                          <Button variant='outlined' size="small" color="error"><IconEraser size={15} /> Hapus Jawaban</Button>
                                         </Stack>
                                         : null}
                                     </>
