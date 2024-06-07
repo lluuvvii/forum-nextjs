@@ -1,4 +1,6 @@
 import { Grid } from '@mui/material'
+
+// comp import
 import UserProfile from '../components/profile/UserProfile'
 import UserForums from '../components/profile/UserForums'
 
