@@ -88,53 +88,57 @@ const ContentForm = ({ forumId, refetchDetailForumQuery }: any) => {
 
   return (
     <>
-      <Collapse in={!cancel}>
-        <Grid item xs={12} mb={3}>
-          <Button variant='contained' onClick={handleCancel}>
-            Jawab
-            <IconPencilQuestion size={15} style={{ marginLeft: '5px' }} />
-          </Button>
-        </Grid>
-      </Collapse>
-      <Collapse in={cancel}>
-        <Grid container sx={{ mb: 3 }}>
-          <DashboardCard title='Jawab Pertanyaan'>
-            <form onSubmit={formik.handleSubmit}>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <Stack
-                    direction="column"
-                    divider={<Divider orientation="horizontal" sx={{ borderWidth: '2px' }} flexItem />}
-                    spacing={2}
-                  >
-                    <Grid item xs={12} style={{ height: 390 }} sx={{ mb: 3 }}>
-                      {/* wysiwys here */}
-                      <TinyMCEEditor onEditorChange={(content: string) => {
-                        formik.setFieldValue('content_value', content)
-                      }} uploadToCLoudinary={uploadToCLoudinary} value={formik.values.content_value} />
-                      {formik.values.content_value === '' ?
-                        <Typography color="error">Isi konten wajib diisi</Typography>
-                        : null}
-                    </Grid>
-                  </Stack>
-                </Grid>
-                <Grid item>
-                  <Button variant='contained' type="submit" disabled={isLoadingForumPost}>
-                    <IconUpload size={15} style={{ marginRight: '5px' }} />
-                    Unggah Jawaban
-                  </Button>
-                </Grid>
-                <Grid item>
-                  <Button variant='outlined' onClick={handleCancel}>
-                    Batal
-                    <IconArrowBackUp size={15} style={{ marginLeft: '5px' }} />
-                  </Button>
-                </Grid>
+      <Grid container>
+        <Grid item xs={12}>
+          <DashboardCard title="Jawab Pertanyaan">
+            <Collapse in={!cancel} timeout={1000}>
+              <Grid item xs={12} mb={3}>
+                <Button variant='contained' onClick={handleCancel}>
+                  Jawab
+                  <IconPencilQuestion size={15} style={{ marginLeft: '5px' }} />
+                </Button>
               </Grid>
-            </form>
+            </Collapse>
+            <Collapse in={cancel} timeout={1000}>
+              <Grid container sx={{ mb: 3 }}>
+                <form onSubmit={formik.handleSubmit}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <Stack
+                        direction="column"
+                        divider={<Divider orientation="horizontal" sx={{ borderWidth: '2px' }} flexItem />}
+                        spacing={2}
+                      >
+                        <Grid item xs={12} style={{ height: 390 }} sx={{ mb: 3 }}>
+                          {/* wysiwys here */}
+                          <TinyMCEEditor onEditorChange={(content: string) => {
+                            formik.setFieldValue('content_value', content)
+                          }} uploadToCLoudinary={uploadToCLoudinary} value={formik.values.content_value} />
+                          {formik.values.content_value === '' ?
+                            <Typography color="error">Isi konten wajib diisi</Typography>
+                            : null}
+                        </Grid>
+                      </Stack>
+                    </Grid>
+                    <Grid item>
+                      <Button variant='contained' type="submit" disabled={isLoadingForumPost}>
+                        <IconUpload size={15} style={{ marginRight: '5px' }} />
+                        Unggah Jawaban
+                      </Button>
+                    </Grid>
+                    <Grid item>
+                      <Button variant='outlined' onClick={handleCancel}>
+                        Batal
+                        <IconArrowBackUp size={15} style={{ marginLeft: '5px' }} />
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </form>
+              </Grid>
+            </Collapse>
           </DashboardCard>
         </Grid>
-      </Collapse>
+      </Grid>
       <Snackbar open={openSnackBar} autoHideDuration={6000} onClose={() => setOpenSnackBar(!openSnackBar)} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
         <Alert
           onClose={() => setOpenSnackBar(!openSnackBar)}

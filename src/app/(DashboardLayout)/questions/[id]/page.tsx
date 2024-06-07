@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Box, Button, Card, CardContent, Chip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Grid, Stack, TextField, Typography } from "@mui/material"
+import { Box, Button, Card, CardContent, Chip, CircularProgress, Collapse, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Grid, Stack, TextField, Typography } from "@mui/material"
 import axios from "@/lib/axios"
 import { useMutation, useQuery } from "react-query"
 import TagsView from "../../components/tags/TagsView"
@@ -16,6 +16,7 @@ import { IconEdit } from '@tabler/icons-react'
 import TinyMCEReadOnly from '../../components/tinymce/TinyMCEReadOnly'
 import ContentForm from '../../components/contentUpload/ContentForm'
 import SnackBarSuccess from '../../components/snackbar/SnackBarSuccess'
+import DashboardCard from '../../components/shared/DashboardCard'
 
 const validationSchema = Yup.object({
   comment_value: Yup.string().required('Komentar tidak boleh kosong')
@@ -62,7 +63,7 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
   })
 
   // get query
-  const { data: detailForumQuery, refetch: refetchDetailForumQuery, isLoading: isLoadingDetailForumQuery } = useQuery({
+  const { data: detailForumQuery, refetch: refetchDetailForumQuery, isLoading: isLoadingDetailForumQuery, isSuccess: isSuccessDetailForumQuery } = useQuery({
     queryKey: ['forum-detail', id],
     queryFn: async () => {
       const response = await axios.get(`/api/forum/${id}`)
@@ -233,291 +234,319 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
   }
 
   return (
-    <Grid container spacing={1}>
-      {detailForumQuery ?
+    <>
+      {detailForumQuery?.user_id !== userLoginQuery?.id ?
+        <Grid container>
+          <Grid item xs={12} sx={{ mb: 3 }}>
+            <ContentForm forumId={detailForumQuery?.id} refetchDetailForumQuery={refetchDetailForumQuery} />
+          </Grid>
+        </Grid>
+        : null}
+      <DashboardCard title="Kontent Forum">
         <>
-          {detailForumQuery?.user_id !== userLoginQuery?.id ?
-            <Grid item>
-              <ContentForm forumId={detailForumQuery.id} refetchDetailForumQuery={refetchDetailForumQuery} />
-            </Grid>
-            : null}
-          {detailForumQuery?.contents?.map((content: any, index: any) => (
-            <Grid key={index} item xs={12}>
-              <Card variant='outlined'>
-                <CardContent>
-                  <Stack
-                    direction="column"
-                    spacing={2}
-                  >
-                    <Grid container spacing={1}>
-                      {content.user_id === detailForumQuery?.user_id ?
-                        <Grid item xs={12}>
-                          <Grid container spacing={1} justifyContent='space-between'>
-                            <Typography variant='h6' sx={{ mb: 1 }}>
-                              Pertanyaan
-                            </Typography>
-                            <Grid item>
-                              <Grid container spacing={1}>
-                                <Grid item>
-                                  <Button color="primary" variant="outlined" size="small" onClick={() => handleUpVote(content.id, "up")}>
-                                    {content?.up_votes.length} <IconThumbUp size={15} />
-                                  </Button>
+          {isLoadingDetailForumQuery && (
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              height="100%"
+              width="100%"
+              // position="absolute"
+              top={0}
+              left={0}
+              bgcolor="rgba(255, 255, 255, 0.8)"
+            // zIndex={1}
+            >
+              <CircularProgress />
+            </Box>
+          )}
+        </>
+        <Collapse in={isSuccessDetailForumQuery} timeout={1000}>
+          <Box sx={{ maxHeight: 800, overflowY: 'auto' }}>
+            <Grid container spacing={1}>
+              {detailForumQuery ?
+                <>
+                  {detailForumQuery?.contents?.map((content: any, index: any) => (
+                    <Grid key={index} item xs={12}>
+                      <Card variant='outlined'>
+                        <CardContent>
+                          <Stack
+                            direction="column"
+                            spacing={2}
+                          >
+                            <Grid container spacing={1}>
+                              {content.user_id === detailForumQuery?.user_id ?
+                                <Grid item xs={12}>
+                                  <Grid container spacing={1} justifyContent='space-between'>
+                                    <Typography variant='h6' sx={{ mb: 1 }}>
+                                      Pertanyaan
+                                    </Typography>
+                                    <Grid item>
+                                      <Grid container spacing={1}>
+                                        <Grid item>
+                                          <Button color="primary" variant="outlined" size="small" onClick={() => handleUpVote(content.id, "up")}>
+                                            {content?.up_votes.length} <IconThumbUp size={15} />
+                                          </Button>
+                                        </Grid>
+                                        <Grid item>
+                                          <Button color="error" variant="outlined" size="small" onClick={() => handleDownVote(content.id, "down")}>
+                                            <IconThumbDown size={15} /> {content?.down_votes.length}
+                                          </Button>
+                                        </Grid>
+                                      </Grid>
+                                    </Grid>
+                                  </Grid>
+                                  <Grid item>
+                                    <Typography>
+                                      <IconUser size={15} /> {content?.user?.username}
+                                    </Typography>
+                                    <Chip label={formatDate(content?.updated_at)} size="small" sx={{ color: "#bdad00", border: 'none' }} variant="outlined" icon={<IconClockEdit size={15} color='#bdad00' />} />
+                                    <Chip label={formatDate(content?.created_at)} size="small" sx={{ color: "#078500", border: 'none' }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
+                                  </Grid>
+                                  <Typography variant='h4' sx={{ mt: 1, wordBreak: 'break-word' }}>
+                                    {detailForumQuery?.title}
+                                  </Typography>
                                 </Grid>
-                                <Grid item>
-                                  <Button color="error" variant="outlined" size="small" onClick={() => handleDownVote(content.id, "down")}>
-                                    <IconThumbDown size={15} /> {content?.down_votes.length}
-                                  </Button>
-                                </Grid>
-                              </Grid>
-                            </Grid>
-                          </Grid>
-                          <Grid item>
-                            <Typography>
-                              <IconUser size={15} /> {content?.user?.username}
-                            </Typography>
-                            <Chip label={formatDate(content?.updated_at)} size="small" sx={{ color: "#bdad00", border: 'none' }} variant="outlined" icon={<IconClockEdit size={15} color='#bdad00' />} />
-                            <Chip label={formatDate(content?.created_at)} size="small" sx={{ color: "#078500", border: 'none' }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
-                          </Grid>
-                          <Typography variant='h4' sx={{ mt: 1, wordBreak: 'break-word' }}>
-                            {detailForumQuery?.title}
-                          </Typography>
-                        </Grid>
-                        :
-                        <Grid item xs={12}>
-                          <Grid container justifyContent='space-between'>
-                            <Typography variant='h6' sx={{ mb: 1 }}>
-                              Jawaban
-                            </Typography>
-                            <Grid item>
-                              <Grid container spacing={1}>
-                                <Grid item>
-                                  <Button color="primary" variant="outlined" size="small" onClick={() => handleUpVote(content.id, "up")}>
-                                    {content?.up_votes.length} <IconThumbUp size={15} />
-                                  </Button>
-                                </Grid>
-                                <Grid item>
-                                  <Button color="error" variant="outlined" size="small" onClick={() => handleDownVote(content.id, "down")}>
-                                    <IconThumbDown size={15} /> {content?.down_votes.length}
-                                  </Button>
-                                </Grid>
-                                <Grid item>
-                                  {content?.is_answer === 0 ?
-                                    <>
-                                      {userLoginQuery?.id === detailForumQuery?.user_id ?
-                                        <>
-                                          {getToken() ?
+                                :
+                                <Grid item xs={12}>
+                                  <Grid container justifyContent='space-between'>
+                                    <Typography variant='h6' sx={{ mb: 1 }}>
+                                      Jawaban
+                                    </Typography>
+                                    <Grid item>
+                                      <Grid container spacing={1}>
+                                        <Grid item>
+                                          <Button color="primary" variant="outlined" size="small" onClick={() => handleUpVote(content.id, "up")}>
+                                            {content?.up_votes.length} <IconThumbUp size={15} />
+                                          </Button>
+                                        </Grid>
+                                        <Grid item>
+                                          <Button color="error" variant="outlined" size="small" onClick={() => handleDownVote(content.id, "down")}>
+                                            <IconThumbDown size={15} /> {content?.down_votes.length}
+                                          </Button>
+                                        </Grid>
+                                        <Grid item>
+                                          {content?.is_answer === 0 ?
                                             <>
-                                              {!detailForumQuery.is_resolved ?
-                                                <Button color="success" variant={content?.is_answer === 0 ? "outlined" : "contained"} size="small" onClick={() => handleAnswered(content.id, detailForumQuery.id)}>
-                                                  Terjawab ?
-                                                </Button>
+                                              {userLoginQuery?.id === detailForumQuery?.user_id ?
+                                                <>
+                                                  {getToken() ?
+                                                    <>
+                                                      {!detailForumQuery.is_resolved ?
+                                                        <Button color="success" variant={content?.is_answer === 0 ? "outlined" : "contained"} size="small" onClick={() => handleAnswered(content.id, detailForumQuery?.id)}>
+                                                          Terjawab ?
+                                                        </Button>
+                                                        : null}
+                                                    </>
+                                                    : null}
+                                                </>
                                                 : null}
                                             </>
-                                            : null}
-                                        </>
-                                        : null}
-                                    </>
-                                    :
-                                    <Button color="success" variant={content?.is_answer === 0 ? "outlined" : "contained"} size="small" onClick={() => {
-                                      if (getToken() && userLoginQuery?.id === detailForumQuery?.user_id) {
-                                        handleAnswered(content.id, detailForumQuery.id)
-                                      }
-                                    }}>
-                                      Selesai <IconCheck size={15} />
-                                    </Button>
-                                  }
-                                </Grid>
-                              </Grid>
-                            </Grid>
-                          </Grid>
-                          <Typography>
-                            <IconUser size={15} /> {content?.user?.username}
-                          </Typography>
-                          <Chip label={formatDate(content?.updated_at)} size="small" sx={{ color: "#bdad00", border: 'none' }} variant="outlined" icon={<IconClockEdit size={15} color='#bdad00' />} />
-                          <Chip label={formatDate(content?.created_at)} size="small" sx={{ color: "#078500", border: 'none' }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
-                        </Grid>}
-                      <Grid item xs={12}>
-                        <Stack direction="row" spacing={1}>
-                          <Grid item xs={12}>
-                            <TinyMCEReadOnly value={content?.content_value} />
-                          </Grid>
-                          {userLoginQuery?.id === content.user_id ?
-                            <>
-                              {getToken() ?
-                                <Stack direction="column" spacing={1}>
-                                  <Button variant='outlined' size="small" color="success"><IconEdit size={15} /></Button>
-                                  <Button variant='outlined' size="small" color="error"><IconEraser size={15} /></Button>
-                                </Stack>
-                                : null}
-                            </>
-                            : null}
-                        </Stack>
-                        {content.user_id === detailForumQuery?.user_id ?
-                          <TagsView tags={detailForumQuery?.forum_tags} />
-                          : null}
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Divider orientation='horizontal' sx={{ mb: 2 }} flexItem />
-                        <form onSubmit={formikComment.handleSubmit}>
-                          <Box sx={{ display: 'flex', gap: 1 }}>
-                            <Button variant="contained" onClick={() => {
-                              if (getToken()) {
-                                handleCommentClick()
-                                setContentId(content.id)
-                                return
-                              }
-                              router.push('/authentication/login')
-                            }} size="small" fullWidth>
-                              Tambahkan Komentar
-                            </Button>
-                            <Dialog
-                              open={openComment}
-                              onClose={handleCommentClick}
-                              PaperProps={{
-                                component: 'form',
-                                onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-                                  event.preventDefault();
-                                  const formData = new FormData(event.currentTarget);
-                                  const formJson = Object.fromEntries((formData as any).entries());
-                                  handleCommentClick()
-                                },
-                              }}
-                            >
-                              <DialogTitle>Tambahkan komentar anda</DialogTitle>
-                              <DialogContent>
-                                <TextField
-                                  margin="dense"
-                                  id="comment_value"
-                                  name="comment_value"
-                                  label="Komentar"
-                                  fullWidth
-                                  variant="standard"
-                                  onChange={formikComment.handleChange}
-                                  value={formikComment.values.comment_value}
-                                  error={formikComment.touched.comment_value && Boolean(formikComment.errors.comment_value)}
-                                  helperText={formikComment.touched.comment_value && formikComment.errors.comment_value}
-                                />
-                              </DialogContent>
-                              <DialogActions>
-                                <Button onClick={handleCommentClick}>Batal</Button>
-                                <Button type="submit">Kirim</Button>
-                              </DialogActions>
-                            </Dialog>
-                          </Box>
-                        </form>
-                        {isSuccessComment && <SnackBarSuccess title="Berhasil mengunggah komentar" />}
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Box sx={{ width: '100%', maxHeight: 300, overflowY: 'auto' }}>
-                          {content.comments?.map((comment: any, index: number) => (
-                            <div key={index}>
-                              {comment ?
-                                <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
-                                  <TextField
-                                    key={index}
-                                    multiline
-                                    id="outlined-read-only-input"
-                                    defaultValue=""
-                                    value={`${comment?.user.username} : ${comment?.comment_value}`}
-                                    InputProps={{
-                                      readOnly: true,
-                                    }}
-                                    variant="outlined"
-                                    fullWidth
-                                  />
-                                  {userLoginQuery?.id === comment.user_id ?
+                                            :
+                                            <Button color="success" variant={content?.is_answer === 0 ? "outlined" : "contained"} size="small" onClick={() => {
+                                              if (getToken() && userLoginQuery?.id === detailForumQuery?.user_id) {
+                                                handleAnswered(content.id, detailForumQuery?.id)
+                                              }
+                                            }}>
+                                              Selesai <IconCheck size={15} />
+                                            </Button>
+                                          }
+                                        </Grid>
+                                      </Grid>
+                                    </Grid>
+                                  </Grid>
+                                  <Typography>
+                                    <IconUser size={15} /> {content?.user?.username}
+                                  </Typography>
+                                  <Chip label={formatDate(content?.updated_at)} size="small" sx={{ color: "#bdad00", border: 'none' }} variant="outlined" icon={<IconClockEdit size={15} color='#bdad00' />} />
+                                  <Chip label={formatDate(content?.created_at)} size="small" sx={{ color: "#078500", border: 'none' }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
+                                </Grid>}
+                              <Grid item xs={12}>
+                                <Stack direction="row" spacing={1}>
+                                  <Grid item xs={12}>
+                                    <TinyMCEReadOnly value={content?.content_value} />
+                                  </Grid>
+                                  {userLoginQuery?.id === content.user_id ?
                                     <>
                                       {getToken() ?
-                                        <form onSubmit={formikUpdateComment.handleSubmit}>
-                                          <Stack direction="column" spacing={1}>
-                                            <Button variant='outlined' size="small" color="success" onClick={() => {
-                                              formikUpdateComment.setFieldValue('comment_update_value', comment.comment_value)
-                                              handleUpdateCommentClick()
-                                              setCommentId(comment.id)
-                                            }}><IconEdit size={15} /></Button>
-                                            <Button variant='outlined' size="small" color="error" onClick={() => {
-                                              handleDeleteCommentClick()
-                                              setCommentId(comment.id)
-                                            }}><IconEraser size={15} /></Button>
-                                            <Dialog
-                                              open={openUpdateComment}
-                                              onClose={handleUpdateCommentClick}
-                                              PaperProps={{
-                                                component: 'form',
-                                                onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-                                                  event.preventDefault();
-                                                  const formData = new FormData(event.currentTarget);
-                                                  const formJson = Object.fromEntries((formData as any).entries());
-                                                  handleUpdateCommentClick()
-                                                },
-                                              }}
-                                            >
-                                              <DialogTitle>Edit komentar anda</DialogTitle>
-                                              <DialogContent>
-                                                <TextField
-                                                  margin="dense"
-                                                  id="comment_update_value"
-                                                  name="comment_update_value"
-                                                  label="Komentar"
-                                                  fullWidth
-                                                  variant="standard"
-                                                  onChange={formikUpdateComment.handleChange}
-                                                  value={formikUpdateComment.values.comment_update_value}
-                                                  error={formikUpdateComment.touched.comment_update_value && Boolean(formikUpdateComment.errors.comment_update_value)}
-                                                  helperText={formikUpdateComment.touched.comment_update_value && formikUpdateComment.errors.comment_update_value}
-                                                />
-                                              </DialogContent>
-                                              <DialogActions>
-                                                <Button onClick={handleUpdateCommentClick}>Batal</Button>
-                                                <Button type="submit">Kirim</Button>
-                                              </DialogActions>
-                                            </Dialog>
-                                            <Dialog
-                                              open={openDeleteComment}
-                                              onClose={handleDeleteCommentClick}
-                                              aria-labelledby="alert-dialog-title"
-                                              aria-describedby="alert-dialog-description"
-                                            >
-                                              <DialogTitle id="alert-dialog-title">
-                                                {"Hapus Komentar ?"}
-                                              </DialogTitle>
-                                              <DialogContent>
-                                                <DialogContentText id="alert-dialog-description">
-                                                  Komentar yang anda pilih akan dihapus secara permanen
-                                                </DialogContentText>
-                                              </DialogContent>
-                                              <DialogActions>
-                                                <Button onClick={handleDeleteCommentClick}>Batal</Button>
-                                                <Button onClick={() => {
-                                                  mutateDeleteComment(commentId)
-                                                  handleDeleteCommentClick()
-                                                }} autoFocus>
-                                                  Hapus
-                                                </Button>
-                                              </DialogActions>
-                                            </Dialog>
-                                          </Stack>
-                                        </form>
+                                        <Stack direction="column" spacing={1}>
+                                          <Button variant='outlined' size="small" color="success"><IconEdit size={15} /></Button>
+                                          <Button variant='outlined' size="small" color="error"><IconEraser size={15} /></Button>
+                                        </Stack>
                                         : null}
                                     </>
                                     : null}
                                 </Stack>
-                                : null}
-                            </div>
-                          ))}
-                        </Box>
-                        {isSuccessUpdateComment && <SnackBarSuccess title="Berhasil mengubah komentar" />}
-                        {isSuccessDeleteComment && <SnackBarSuccess title="Berhasil menghapus komentar" />}
-                      </Grid>
+                                {content.user_id === detailForumQuery?.user_id ?
+                                  <TagsView tags={detailForumQuery?.forum_tags} />
+                                  : null}
+                              </Grid>
+                              <Grid item xs={12}>
+                                <Divider orientation='horizontal' sx={{ mb: 2 }} flexItem />
+                                <form onSubmit={formikComment.handleSubmit}>
+                                  <Box sx={{ display: 'flex', gap: 1 }}>
+                                    <Button variant="contained" onClick={() => {
+                                      if (getToken()) {
+                                        handleCommentClick()
+                                        setContentId(content.id)
+                                        return
+                                      }
+                                      router.push('/authentication/login')
+                                    }} size="small" fullWidth>
+                                      Tambahkan Komentar
+                                    </Button>
+                                    <Dialog
+                                      open={openComment}
+                                      onClose={handleCommentClick}
+                                      PaperProps={{
+                                        component: 'form',
+                                        onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                                          event.preventDefault();
+                                          const formData = new FormData(event.currentTarget);
+                                          const formJson = Object.fromEntries((formData as any).entries());
+                                          handleCommentClick()
+                                        },
+                                      }}
+                                    >
+                                      <DialogTitle>Tambahkan komentar anda</DialogTitle>
+                                      <DialogContent>
+                                        <TextField
+                                          margin="dense"
+                                          id="comment_value"
+                                          name="comment_value"
+                                          label="Komentar"
+                                          fullWidth
+                                          variant="standard"
+                                          onChange={formikComment.handleChange}
+                                          value={formikComment.values.comment_value}
+                                          error={formikComment.touched.comment_value && Boolean(formikComment.errors.comment_value)}
+                                          helperText={formikComment.touched.comment_value && formikComment.errors.comment_value}
+                                        />
+                                      </DialogContent>
+                                      <DialogActions>
+                                        <Button onClick={handleCommentClick}>Batal</Button>
+                                        <Button type="submit">Kirim</Button>
+                                      </DialogActions>
+                                    </Dialog>
+                                  </Box>
+                                </form>
+                                {isSuccessComment && <SnackBarSuccess title="Berhasil mengunggah komentar" />}
+                              </Grid>
+                              <Grid item xs={12}>
+                                <Box sx={{ width: '100%', maxHeight: 300, overflowY: 'auto' }}>
+                                  {content.comments?.map((comment: any, index: number) => (
+                                    <div key={index}>
+                                      {comment ?
+                                        <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
+                                          <TextField
+                                            key={index}
+                                            multiline
+                                            id="outlined-read-only-input"
+                                            defaultValue=""
+                                            value={`${comment?.user.username} : ${comment?.comment_value}`}
+                                            InputProps={{
+                                              readOnly: true,
+                                            }}
+                                            variant="outlined"
+                                            fullWidth
+                                          />
+                                          {userLoginQuery?.id === comment.user_id ?
+                                            <>
+                                              {getToken() ?
+                                                <form onSubmit={formikUpdateComment.handleSubmit}>
+                                                  <Stack direction="column" spacing={1}>
+                                                    <Button variant='outlined' size="small" color="success" onClick={() => {
+                                                      formikUpdateComment.setFieldValue('comment_update_value', comment.comment_value)
+                                                      handleUpdateCommentClick()
+                                                      setCommentId(comment.id)
+                                                    }}><IconEdit size={15} /></Button>
+                                                    <Button variant='outlined' size="small" color="error" onClick={() => {
+                                                      handleDeleteCommentClick()
+                                                      setCommentId(comment.id)
+                                                    }}><IconEraser size={15} /></Button>
+                                                    <Dialog
+                                                      open={openUpdateComment}
+                                                      onClose={handleUpdateCommentClick}
+                                                      PaperProps={{
+                                                        component: 'form',
+                                                        onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                                                          event.preventDefault();
+                                                          const formData = new FormData(event.currentTarget);
+                                                          const formJson = Object.fromEntries((formData as any).entries());
+                                                          handleUpdateCommentClick()
+                                                        },
+                                                      }}
+                                                    >
+                                                      <DialogTitle>Edit komentar anda</DialogTitle>
+                                                      <DialogContent>
+                                                        <TextField
+                                                          margin="dense"
+                                                          id="comment_update_value"
+                                                          name="comment_update_value"
+                                                          label="Komentar"
+                                                          fullWidth
+                                                          variant="standard"
+                                                          onChange={formikUpdateComment.handleChange}
+                                                          value={formikUpdateComment.values.comment_update_value}
+                                                          error={formikUpdateComment.touched.comment_update_value && Boolean(formikUpdateComment.errors.comment_update_value)}
+                                                          helperText={formikUpdateComment.touched.comment_update_value && formikUpdateComment.errors.comment_update_value}
+                                                        />
+                                                      </DialogContent>
+                                                      <DialogActions>
+                                                        <Button onClick={handleUpdateCommentClick}>Batal</Button>
+                                                        <Button type="submit">Kirim</Button>
+                                                      </DialogActions>
+                                                    </Dialog>
+                                                    <Dialog
+                                                      open={openDeleteComment}
+                                                      onClose={handleDeleteCommentClick}
+                                                      aria-labelledby="alert-dialog-title"
+                                                      aria-describedby="alert-dialog-description"
+                                                    >
+                                                      <DialogTitle id="alert-dialog-title">
+                                                        {"Hapus Komentar ?"}
+                                                      </DialogTitle>
+                                                      <DialogContent>
+                                                        <DialogContentText id="alert-dialog-description">
+                                                          Komentar yang anda pilih akan dihapus secara permanen
+                                                        </DialogContentText>
+                                                      </DialogContent>
+                                                      <DialogActions>
+                                                        <Button onClick={handleDeleteCommentClick}>Batal</Button>
+                                                        <Button onClick={() => {
+                                                          mutateDeleteComment(commentId)
+                                                          handleDeleteCommentClick()
+                                                        }} autoFocus>
+                                                          Hapus
+                                                        </Button>
+                                                      </DialogActions>
+                                                    </Dialog>
+                                                  </Stack>
+                                                </form>
+                                                : null}
+                                            </>
+                                            : null}
+                                        </Stack>
+                                        : null}
+                                    </div>
+                                  ))}
+                                </Box>
+                                {isSuccessUpdateComment && <SnackBarSuccess title="Berhasil mengubah komentar" />}
+                                {isSuccessDeleteComment && <SnackBarSuccess title="Berhasil menghapus komentar" />}
+                              </Grid>
+                            </Grid>
+                          </Stack>
+                        </CardContent>
+                      </Card>
                     </Grid>
-                  </Stack>
-                </CardContent>
-              </Card >
+                  ))}
+                </>
+                : null}
             </Grid>
-          ))}
-        </>
-        : null}
-    </Grid >
+          </Box>
+        </Collapse>
+      </DashboardCard>
+    </>
   )
 }
 

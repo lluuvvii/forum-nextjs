@@ -1,7 +1,6 @@
 import { Grid } from '@mui/material'
 import UserProfile from '../components/profile/UserProfile'
-import UserComments from '../components/profile/UserComments'
-import CollapseMUI from '../components/Collapse/CollapseMUI'
+import UserForums from '../components/profile/UserForums'
 
 const Profile = () => {
   return (
@@ -9,14 +8,10 @@ const Profile = () => {
       <Grid item xs={12}>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={8}>
-            <CollapseMUI>
-              <UserProfile />
-            </CollapseMUI>
+            <UserProfile />
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
-            <CollapseMUI>
-              <UserComments />
-            </CollapseMUI>
+            <UserForums />
           </Grid>
         </Grid>
       </Grid>
