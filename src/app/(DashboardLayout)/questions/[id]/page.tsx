@@ -368,12 +368,24 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                                   </Grid>
                                   {userLoginQuery?.id === content.user_id ?
                                     <>
-                                      {getToken() ?
-                                        <Stack direction="row" spacing={1}>
-                                          <Button variant='outlined' size="small" color="success"><IconEdit size={15} /> Edit Jawaban</Button>
-                                          <Button variant='outlined' size="small" color="error"><IconEraser size={15} /> Hapus Jawaban</Button>
-                                        </Stack>
-                                        : null}
+                                      {content.user_id === detailForumQuery?.user_id ?
+                                        <>
+                                          {getToken() ?
+                                            <Stack direction="row" spacing={1}>
+                                              <Button variant='outlined' size="small" color="success"><IconEdit size={15} /> Edit Pertanyaan</Button>
+                                              <Button variant='outlined' size="small" color="error"><IconEraser size={15} /> Hapus Pertanyaan</Button>
+                                            </Stack>
+                                            : null}
+                                        </>
+                                        :
+                                        <>
+                                          {getToken() ?
+                                            <Stack direction="row" spacing={1}>
+                                              <Button variant='outlined' size="small" color="success"><IconEdit size={15} /> Edit Jawaban</Button>
+                                              <Button variant='outlined' size="small" color="error"><IconEraser size={15} /> Hapus Jawaban</Button>
+                                            </Stack>
+                                            : null}
+                                        </>}
                                     </>
                                     : null}
                                 </Stack>
