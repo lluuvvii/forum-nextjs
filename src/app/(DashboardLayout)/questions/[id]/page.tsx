@@ -15,6 +15,7 @@ import { useFormik } from 'formik'
 import { IconEdit } from '@tabler/icons-react'
 import TinyMCEReadOnly from '../../components/tinymce/TinyMCEReadOnly'
 import ContentForm from '../../components/contentUpload/ContentForm'
+import SnackBarSuccess from '../../components/snackbar/SnackBarSuccess'
 
 const validationSchema = Yup.object({
   comment_value: Yup.string().required('Komentar tidak boleh kosong')
@@ -404,6 +405,7 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                             </Dialog>
                           </Box>
                         </form>
+                        {isSuccessComment && <SnackBarSuccess title="Berhasil mengunggah komentar" />}
                       </Grid>
                       <Grid item xs={12}>
                         <Box sx={{ width: '100%', maxHeight: 300, overflowY: 'auto' }}>
@@ -504,6 +506,8 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                             </div>
                           ))}
                         </Box>
+                        {isSuccessUpdateComment && <SnackBarSuccess title="Berhasil mengubah komentar" />}
+                        {isSuccessDeleteComment && <SnackBarSuccess title="Berhasil menghapus komentar" />}
                       </Grid>
                     </Grid>
                   </Stack>
