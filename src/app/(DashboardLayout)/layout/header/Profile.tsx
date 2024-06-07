@@ -72,7 +72,7 @@ const Profile = () => {
                 <IconUser width={20} />
               </ListItemIcon>
               <ListItemText>
-                My Profile
+                Profil Saya
               </ListItemText>
             </ListItemButton>
             <Box mt={1} py={1} px={2}>

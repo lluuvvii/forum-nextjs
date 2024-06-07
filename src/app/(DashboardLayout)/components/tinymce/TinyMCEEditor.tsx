@@ -22,7 +22,7 @@ const TinyMCEEditor = ({ onEditorChange, uploadToCLoudinary, value }: any) => {
           top={0}
           left={0}
           bgcolor="rgba(255, 255, 255, 0.8)"
-          // zIndex={1}
+        // zIndex={1}
         >
           <CircularProgress />
         </Box>
@@ -33,11 +33,11 @@ const TinyMCEEditor = ({ onEditorChange, uploadToCLoudinary, value }: any) => {
           menubar: false,
           plugins: 'anchor autolink charmap codesample emoticons image link lists searchreplace table visualblocks wordcount linkchecker',
           toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat | anchor autolink codesample lists searchreplace visualblocks wordcount linkchecker',
-          mergetags_list: [
-            { value: 'First.Name', title: 'First Name' },
-            { value: 'Email', title: 'Email' },
-          ],
-          ai_request: (request: any, respondWith: any) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
+          // mergetags_list: [
+          //   { value: 'First.Name', title: 'First Name' },
+          //   { value: 'Email', title: 'Email' },
+          // ],
+          // ai_request: (request: any, respondWith: any) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
           resize: false,
           images_upload_handler: uploadToCLoudinary,
           setup: (editor) => {

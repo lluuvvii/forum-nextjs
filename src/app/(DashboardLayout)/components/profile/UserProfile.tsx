@@ -5,7 +5,7 @@ import { IconCalendarTime, IconEditOff, IconEdit } from '@tabler/icons-react'
 
 const UserProfile = () => {
   return (
-    <DashboardCard title="Profile" subtitle="Data Pribadi anda">
+    <DashboardCard title="Profil" subtitle="Data Pribadi anda">
       <Box sx={{ height: { xs: 350, md: 200 }, maxHeight: { xs: 400, md: 200 }, overflowY: 'auto' }}>
         <Stack
           direction={{ xs: 'column', md: 'row' }}
@@ -17,7 +17,7 @@ const UserProfile = () => {
             <Avatar sx={{ width: 100, height: 100, bgcolor: '#ff9d00' }}>L</Avatar>
             <Button variant="contained" size="small">
               <IconEdit size={15} style={{ marginRight: '5px' }} />
-              Edit Profile
+              Edit Profil
             </Button>
           </Stack>
           <Grid item>

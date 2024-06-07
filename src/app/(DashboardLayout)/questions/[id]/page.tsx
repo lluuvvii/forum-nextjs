@@ -429,6 +429,7 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                                         <form onSubmit={formikUpdateComment.handleSubmit}>
                                           <Stack direction="column" spacing={1}>
                                             <Button variant='outlined' size="small" color="success" onClick={() => {
+                                              formikUpdateComment.setFieldValue('comment_update_value', comment.comment_value)
                                               handleUpdateCommentClick()
                                               setCommentId(comment.id)
                                             }}><IconEdit size={15} /></Button>
