@@ -5,6 +5,7 @@ import { Typography, Box, CircularProgress, Stack, Divider, Collapse } from '@mu
 import DashboardCard from '../shared/DashboardCard'
 import { useQuery } from 'react-query'
 import axios from '@/lib/axios'
+import Link from 'next/link'
 
 const UserForums = () => {
   const { data: userLoginQuery } = useQuery({
@@ -49,7 +50,11 @@ const UserForums = () => {
         <Box sx={{ height: 200, maxHeight: 200, overflowY: 'auto' }}>
           <Stack direction="column" spacing={1} divider={<Divider orientation='horizontal' flexItem />}>
             {userDetailQuery?.forums?.map((forum: any, index: any) => (
-              <Typography key={index}>{forum.title}</Typography>
+              <Typography key={index}>
+                <Link href={`/questions/${forum.id}`} style={{ textDecoration: 'none', color: 'black' }}>
+                  {forum.title}
+                </Link>
+              </Typography>
             ))}
           </Stack>
         </Box>

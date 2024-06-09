@@ -6,7 +6,6 @@ import axios from "@/lib/axios"
 import { useMutation, useQuery } from "react-query"
 import TagsView from "../../components/tags/TagsView"
 import { IconClockEdit, IconClockPlus, IconEraser, IconThumbDown } from "@tabler/icons-react"
-import { IconUser } from "@tabler/icons-react"
 import { IconCheck } from "@tabler/icons-react"
 import { IconThumbUp } from "@tabler/icons-react"
 import { useRouter } from "next/navigation"
@@ -27,6 +26,8 @@ const commentUpdateSchema = Yup.object({
 })
 
 const QuestionDetail = ({ params }: { params: { id: string } }) => {
+
+  // state vars
   const id = params.id
   const router = useRouter()
   const [contentId, setContentId] = useState('')
