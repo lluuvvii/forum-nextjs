@@ -83,7 +83,7 @@ const UserProfile = () => {
             alignItems="center"
           >
             <Stack direction="column" spacing={2} alignItems="center">
-              <Avatar sx={{ width: 100, height: 100 }}><IconUser size={50} /></Avatar>
+              <Avatar sx={{ width: 100, height: 100 }} src="https://source.boringavatars.com/beam" alt="user-profile" />
               <Button variant="contained" size="small">
                 <IconEdit size={15} style={{ marginRight: '5px' }} />
                 Edit Profil

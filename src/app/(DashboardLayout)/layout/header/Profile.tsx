@@ -48,7 +48,7 @@ const Profile = () => {
             onClick={handleClick2}
           >
             {/* <Avatar src="/images/profile/user-1.jpg" alt="image" sx={{ width: 35, height: 35, }} /> */}
-            <Avatar sx={{ width: 35, height: 35 }}><IconUser size={17.5} /></Avatar>
+            <Avatar sx={{ width: 35, height: 35 }} src="https://source.boringavatars.com/beam" alt="user-profile" />
           </IconButton>
           {/* ------------------------------------------- */}
           {/* Message Dropdown */}

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 
 import TagsView from '../tags/TagsView'
 import DashboardCard from '../shared/DashboardCard'
-import { Card, CardContent, Stack, Typography, Grid, Box, CircularProgress, Chip, Button, Collapse } from '@mui/material'
+import { Card, CardContent, Stack, Typography, Grid, Box, CircularProgress, Chip, Button, Collapse, Avatar } from '@mui/material'
 import axios from '@/lib/axios'
 import Link from 'next/link'
 import { IconCheck, IconClockPlus, IconX } from '@tabler/icons-react'
@@ -83,9 +83,18 @@ const AllQuestions = () => {
                       {userLoginQuery?.id === question?.user_id && token ?
                         <Typography sx={{ mb: 1 }}>
                           <Grid container justifyContent='space-between'>
-                            <Typography>
-                              <IconUser size={15} /> Pertanyaan saya : {userLoginQuery?.username}
-                            </Typography>
+                            <Grid item>
+                              <Grid container spacing={1}>
+                                <Grid item>
+                                  <Avatar sx={{ width: 25, height: 25 }} src="https://source.boringavatars.com/beam" alt="user-profile" />
+                                </Grid>
+                                <Grid item>
+                                  <Typography>
+                                    Pertanyaan saya : {userLoginQuery?.username}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                            </Grid>
                             <Button color="success" variant={question?.is_resolved === 0 ? "outlined" : "contained"} size="small">
                               {question?.is_resolved === 0 ?
                                 <>
@@ -102,9 +111,18 @@ const AllQuestions = () => {
                         </Typography>
                         : <Typography sx={{ mb: 1 }}>
                           <Grid container justifyContent='space-between'>
-                            <Typography>
-                              <IconUser size={15} /> {question?.user.username}
-                            </Typography>
+                            <Grid item>
+                              <Grid container spacing={1}>
+                                <Grid item>
+                                  <Avatar sx={{ width: 25, height: 25 }} src="https://source.boringavatars.com/beam" alt="user-profile" />
+                                </Grid>
+                                <Grid item>
+                                  <Typography>
+                                    {question?.user.username}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                            </Grid>
                             <Button color="success" variant={question?.is_resolved === 0 ? "outlined" : "contained"} size="small">
                               {question?.is_resolved === 0 ?
                                 <>

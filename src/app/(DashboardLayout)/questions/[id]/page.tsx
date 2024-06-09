@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Box, Button, Card, CardContent, Chip, CircularProgress, Collapse, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Grid, Stack, TextField, Typography } from "@mui/material"
+import { Avatar, Box, Button, Card, CardContent, Chip, CircularProgress, Collapse, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Grid, Stack, TextField, Typography } from "@mui/material"
 import axios from "@/lib/axios"
 import { useMutation, useQuery } from "react-query"
 import TagsView from "../../components/tags/TagsView"
@@ -297,9 +297,16 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                                     </Grid>
                                   </Grid>
                                   <Grid item>
-                                    <Typography>
-                                      <IconUser size={15} /> {content?.user?.username}
-                                    </Typography>
+                                    <Grid container spacing={1}>
+                                      <Grid item>
+                                        <Avatar sx={{ width: 25, height: 25 }} src="https://source.boringavatars.com/beam" alt="user-profile" />
+                                      </Grid>
+                                      <Grid item>
+                                        <Typography>
+                                          {content?.user?.username}
+                                        </Typography>
+                                      </Grid>
+                                    </Grid>
                                     <Chip label={formatDate(content?.updated_at)} size="small" sx={{ color: "#bdad00", border: 'none' }} variant="outlined" icon={<IconClockEdit size={15} color='#bdad00' />} />
                                     <Chip label={formatDate(content?.created_at)} size="small" sx={{ color: "#078500", border: 'none' }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
                                   </Grid>
@@ -355,9 +362,16 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                                       </Grid>
                                     </Grid>
                                   </Grid>
-                                  <Typography>
-                                    <IconUser size={15} /> {content?.user?.username}
-                                  </Typography>
+                                  <Grid container spacing={1}>
+                                    <Grid item>
+                                      <Avatar sx={{ width: 25, height: 25 }} src="https://source.boringavatars.com/beam" alt="user-profile" />
+                                    </Grid>
+                                    <Grid item>
+                                      <Typography>
+                                        {content?.user?.username}
+                                      </Typography>
+                                    </Grid>
+                                  </Grid>
                                   <Chip label={formatDate(content?.updated_at)} size="small" sx={{ color: "#bdad00", border: 'none' }} variant="outlined" icon={<IconClockEdit size={15} color='#bdad00' />} />
                                   <Chip label={formatDate(content?.created_at)} size="small" sx={{ color: "#078500", border: 'none' }} variant="outlined" icon={<IconClockPlus size={15} color='#078500' />} />
                                 </Grid>}
