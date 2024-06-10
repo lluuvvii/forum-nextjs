@@ -16,6 +16,8 @@ import TinyMCEReadOnly from '../../components/tinymce/TinyMCEReadOnly'
 import ContentForm from '../../components/contentUpload/ContentForm'
 import SnackBarSuccess from '../../components/snackbar/SnackBarSuccess'
 import DashboardCard from '../../components/shared/DashboardCard'
+import TinyMCEEditor from '../../components/tinymce/TinyMCEEditor'
+import Axios from 'axios'
 
 const validationSchema = Yup.object({
   comment_value: Yup.string().required('Komentar tidak boleh kosong')
@@ -24,6 +26,15 @@ const validationSchema = Yup.object({
 const commentUpdateSchema = Yup.object({
   comment_update_value: Yup.string().required('Komentar tidak boleh kosong')
 })
+
+const forumUpdateSchema = Yup.object({
+  title: Yup.string().required('Judul wajib diisi'),
+  // content_value: Yup.string().required('Isi konten wajib diisi'),
+  // tags: Yup.array()
+  //   .of(Yup.string().required('Tag tidak boleh kosong'))
+  //   .required('Tags wajib diisi')
+  //   .min(1, 'Setidaknya satu tag harus diisi')
+});
 
 const QuestionDetail = ({ params }: { params: { id: string } }) => {
 
@@ -35,6 +46,9 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
   const [openComment, setOpenComment] = useState(false)
   const [openUpdateComment, setOpenUpdateComment] = useState(false)
   const [openDeleteComment, setOpenDeleteComment] = useState(false)
+  const [openUpdateForum, setOpenUpdateForum] = useState(false)
+  const [tagsEdit, setTagsEdit] = useState<string[]>([])
+  const [tagInputValue, setTagInputValue] = useState<string>('')
 
   const getToken = () => {
     const token = localStorage.getItem('token')
@@ -62,6 +76,31 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
       resetForm()
     },
   })
+
+  const formikUpdateForum = useFormik({
+    initialValues: {
+      title: '',
+      content_value: '',
+      tags: []
+    },
+    validationSchema: forumUpdateSchema,
+    onSubmit: (values) => {
+      formikUpdateForum.setFieldValue('title', '')
+      formikUpdateForum.setFieldValue('content_value', '')
+      formikUpdateForum.setFieldValue('tags', [])
+      setTagsEdit([])
+      if (values.title === '') {
+        return
+      }
+      if (values.tags.length < 1) {
+        return
+      }
+      if (values.content_value === '') {
+        return
+      }
+      mutateUpdateForum(values)
+    },
+  });
 
   // get query
   const { data: detailForumQuery, refetch: refetchDetailForumQuery, isLoading: isLoadingDetailForumQuery, isSuccess: isSuccessDetailForumQuery } = useQuery({
@@ -169,6 +208,48 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
     }
   })
 
+  const { mutate: mutateDeleteContent, isLoading: isLoadingDeleteContent, error: isErrorDeleteContent, isSuccess: isSuccessDeleteContent } = useMutation(async (values: any) => {
+    try {
+      const response = await axios.delete(`/api/content/${values}`)
+      if (response.status === 200) {
+        refetchDetailForumQuery()
+        refetchUserLogin()
+      }
+
+      // return response.data
+    } catch (err: any) {
+      throw new Error(err.response.data.message)
+    }
+  })
+
+  const { mutate: mutateUpdateForum, isLoading: isLoadingUpdateForum, error: isErrorUpdateForum, isSuccess: isSuccessUpdateForum } = useMutation(async (values: any) => {
+    try {
+      const response = await axios.put(`/api/forum/${detailForumQuery.id}`, values)
+      if (response.status === 200) {
+        refetchDetailForumQuery()
+        refetchUserLogin()
+      }
+
+      // return response.data
+    } catch (err: any) {
+      throw new Error(err.response.data.message)
+    }
+  })
+
+  const { mutate: mutateDeleteForum, isLoading: isLoadingDeleteForum, error: isErrorDeleteForum, isSuccess: isSuccessDeleteForum } = useMutation(async (values: any) => {
+    try {
+      const response = await axios.delete(`/api/forum/${values}`)
+      if (response.status === 200) {
+        refetchDetailForumQuery()
+        refetchUserLogin()
+      }
+
+      // return response.data
+    } catch (err: any) {
+      throw new Error(err.response.data.message)
+    }
+  })
+
   const formatDate = (dateString: any) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('id-ID', {
@@ -232,6 +313,47 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
   const handleDeleteCommentClick = () => {
     // setOpenUpdateComment(!openUpdateComment)
     setOpenDeleteComment(!openDeleteComment)
+  }
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTagInputValue(event.target.value)
+    if (event.target.value.includes(' ')) {
+      event.preventDefault()
+      const newTag = tagInputValue.trim()
+      if (newTag) {
+        setTagsEdit([...tagsEdit, newTag])
+        formikUpdateForum.setFieldValue('tags', [...tagsEdit, newTag])
+        setTagInputValue('')
+      }
+    }
+  }
+
+  const handleDeleteTag = (tagToDelete: string) => {
+    setTagsEdit(tagsEdit.filter(tag => tag !== tagToDelete))
+    formikUpdateForum.setFieldValue('tags', tagsEdit.filter(tag => tag !== tagToDelete))
+  }
+
+  const uploadToCLoudinary = async (blobInfo: any, success: any, failure: any) => {
+    const formData = new FormData()
+    formData.append('file', blobInfo.blob(), blobInfo.filename())
+    formData.append(
+      'upload_preset',
+      'forum_image_upload'
+    )
+    try {
+      const response = await Axios.post('https://api.cloudinary.com/v1_1/dbzjr3io4/image/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+
+      const data = await response.data.secure_url
+      success(data)
+      return data
+    } catch (err) {
+      console.error('Error uploading image : ', err)
+      throw err
+    }
   }
 
   return (
@@ -387,8 +509,101 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                                         <>
                                           {getToken() ?
                                             <Stack direction="row" spacing={1}>
-                                              <Button variant='outlined' size="small" color="success"><IconEdit size={15} /> Edit Pertanyaan</Button>
-                                              <Button variant='outlined' size="small" color="error"><IconEraser size={15} /> Hapus Pertanyaan</Button>
+                                              <Button variant='outlined' size="small" color="success" onClick={() => {
+                                                formikUpdateForum.setFieldValue('title', detailForumQuery.title)
+                                                formikUpdateForum.setFieldValue('content_value', content.content_value)
+                                                // setTagsEdit([...tagsEdit, detailForumQuery.forum_tags.map((tag: any) => tag.tag.name)])
+                                                // formikUpdateForum.setFieldValue('tags', [...formikUpdateForum.values.tags, detailForumQuery.forum_tags.map((tag: any) => tag.tag.name)])
+                                                setOpenUpdateForum(!openUpdateForum)
+                                              }}><IconEdit size={15} /> Edit Pertanyaan</Button>
+                                              <Button variant='outlined' size="small" color="error" onClick={() => {
+                                                mutateDeleteForum(detailForumQuery.id)
+                                                router.push('/questions')
+                                              }}><IconEraser size={15} /> Hapus Pertanyaan</Button>
+                                              <form onSubmit={formikUpdateForum.handleSubmit}>
+                                                <Dialog
+                                                  fullWidth
+                                                  open={openUpdateForum}
+                                                  onClose={() => setOpenUpdateForum(!openUpdateForum)}
+                                                  PaperProps={{
+                                                    component: 'form',
+                                                    onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                                                      event.preventDefault();
+                                                      const formData = new FormData(event.currentTarget);
+                                                      const formJson = Object.fromEntries((formData as any).entries());
+                                                      setOpenUpdateForum(!openUpdateForum)
+                                                    },
+                                                  }}
+                                                >
+                                                  <DialogTitle>Edit pertanyaan anda</DialogTitle>
+                                                  <DialogContent>
+                                                    <Grid container spacing={2}>
+                                                      <Grid item xs={12}>
+                                                        <Stack
+                                                          direction="column"
+                                                          divider={<Divider orientation="horizontal" sx={{ borderWidth: '2px' }} flexItem />}
+                                                          spacing={2}
+                                                        >
+                                                          <Grid item xs={12}>
+                                                            <TextField
+                                                              label='Judul Pertanyaan'
+                                                              variant='outlined'
+                                                              fullWidth
+                                                              name="title"
+                                                              value={formikUpdateForum.values.title}
+                                                              onChange={formikUpdateForum.handleChange}
+                                                            />
+                                                            {formikUpdateForum.values.title === '' ?
+                                                              <Typography color="error">Judul wajib diisi</Typography>
+                                                              : null}
+                                                          </Grid>
+                                                          <Grid item xs={12} style={{ height: 390 }} sx={{ mb: 3 }}>
+                                                            <TinyMCEEditor onEditorChange={(content: string) => {
+                                                              formikUpdateForum.setFieldValue('content_value', content)
+                                                            }} uploadToCLoudinary={uploadToCLoudinary} value={formikUpdateForum.values.content_value} />
+                                                            {formikUpdateForum.values.content_value === '' ?
+                                                              <Typography color="error">Isi konten wajib diisi</Typography>
+                                                              : null}
+                                                          </Grid>
+                                                          <Grid item xs={12}>
+                                                            <Card variant='outlined'>
+                                                              <CardContent>
+                                                                <Grid container spacing={2} alignItems="center">
+                                                                  <Grid item xs={12}>
+                                                                    <TextField
+                                                                      fullWidth
+                                                                      variant="standard"
+                                                                      label="Tags"
+                                                                      name="tags"
+                                                                      value={tagInputValue}
+                                                                      onChange={handleInputChange}
+                                                                      placeholder="Tekan Spasi untuk menambahkan tag"
+                                                                    />
+                                                                    {formikUpdateForum.values.tags.length < 1 ?
+                                                                      <Typography color="error">Isi tag wajib diisi minimal 1</Typography>
+                                                                      : null}
+                                                                  </Grid>
+                                                                  <TagsView handleDeleteTag={handleDeleteTag} tags={tagsEdit} />
+                                                                </Grid>
+                                                              </CardContent>
+                                                            </Card>
+                                                          </Grid>
+                                                        </Stack>
+                                                      </Grid>
+                                                    </Grid>
+                                                  </DialogContent>
+                                                  <DialogActions>
+                                                    <Button onClick={() => {
+                                                      setOpenUpdateForum(!openUpdateForum)
+                                                      formikUpdateForum.setFieldValue('tags', [])
+                                                      setTagsEdit([])
+                                                    }}>Batal</Button>
+                                                    <Button type="submit">Kirim</Button>
+                                                  </DialogActions>
+                                                </Dialog>
+                                              </form>
+                                              {isSuccessDeleteForum && <SnackBarSuccess title="Berhasil menghapus pertanyaan" />}
+                                              {isSuccessUpdateForum && <SnackBarSuccess title="Berhasil mengubah pertanyaan" />}
                                             </Stack>
                                             : null}
                                         </>
@@ -397,7 +612,10 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                                           {getToken() ?
                                             <Stack direction="row" spacing={1}>
                                               <Button variant='outlined' size="small" color="success"><IconEdit size={15} /> Edit Jawaban</Button>
-                                              <Button variant='outlined' size="small" color="error"><IconEraser size={15} /> Hapus Jawaban</Button>
+                                              <Button variant='outlined' size="small" color="error" onClick={() => {
+                                                mutateDeleteContent(content.id)
+                                              }}><IconEraser size={15} /> Hapus Jawaban</Button>
+                                              {isSuccessDeleteContent && <SnackBarSuccess title="Berhasil menghapus jawaban" />}
                                             </Stack>
                                             : null}
                                         </>}
@@ -572,7 +790,7 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
             </Grid>
           </Box>
         </Collapse>
-      </DashboardCard>
+      </DashboardCard >
     </>
   )
 }

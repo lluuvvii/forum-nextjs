@@ -31,8 +31,8 @@ const TinyMCEEditor = ({ onEditorChange, uploadToCLoudinary, value }: any) => {
         apiKey={process.env.NEXT_PUBLIC_API_KEY}
         init={{
           menubar: false,
-          plugins: 'anchor autolink charmap codesample emoticons image link lists searchreplace table visualblocks wordcount linkchecker',
-          toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat | anchor autolink codesample lists searchreplace visualblocks wordcount linkchecker',
+          plugins: 'autolink charmap codesample image link lists table',
+          toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image table | a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | autolink codesample lists',
           // mergetags_list: [
           //   { value: 'First.Name', title: 'First Name' },
           //   { value: 'Email', title: 'Email' },

@@ -69,6 +69,9 @@ const QuestionForm = () => {
     },
     validationSchema,
     onSubmit: (values) => {
+      if (formik.values.title === '') {
+        return
+      }
       if (formik.values.tags.length < 1) {
         return
       }
