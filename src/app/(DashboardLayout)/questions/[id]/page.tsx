@@ -36,6 +36,10 @@ const forumUpdateSchema = Yup.object({
   //   .min(1, 'Setidaknya satu tag harus diisi')
 });
 
+const contentUpdateSchema = Yup.object({
+  content_value: Yup.string().required('Isi konten wajib diisi')
+});
+
 const QuestionDetail = ({ params }: { params: { id: string } }) => {
 
   // state vars
@@ -47,6 +51,9 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
   const [openUpdateComment, setOpenUpdateComment] = useState(false)
   const [openDeleteComment, setOpenDeleteComment] = useState(false)
   const [openUpdateForum, setOpenUpdateForum] = useState(false)
+  const [openUpdateContent, setOpenUpdateContent] = useState(false)
+  const [openDeleteContent, setOpenDeleteContent] = useState(false)
+  const [openDeleteForum, setOpenDeleteForum] = useState(false)
   const [tagsEdit, setTagsEdit] = useState<string[]>([])
   const [tagInputValue, setTagInputValue] = useState<string>('')
 
@@ -99,6 +106,21 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
         return
       }
       mutateUpdateForum(values)
+    },
+  });
+
+  const formikUpdateContent = useFormik({
+    initialValues: {
+      content_value: '',
+    },
+    validationSchema: contentUpdateSchema,
+    onSubmit: (values) => {
+      formikUpdateContent.setFieldValue('content_value', '')
+      if (values.content_value === '') {
+        return
+      }
+
+      mutateUpdateContent(values)
     },
   });
 
@@ -197,6 +219,20 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
   const { mutate: mutateDeleteComment, isLoading: isLoadingDeleteComment, error: isErrorDeleteComment, isSuccess: isSuccessDeleteComment } = useMutation(async (values: any) => {
     try {
       const response = await axios.delete(`/api/comment/${values}`)
+      if (response.status === 200) {
+        refetchDetailForumQuery()
+        refetchUserLogin()
+      }
+
+      // return response.data
+    } catch (err: any) {
+      throw new Error(err.response.data.message)
+    }
+  })
+
+  const { mutate: mutateUpdateContent, isLoading: isLoadingUpdateContent, error: isErrorUpdateContent, isSuccess: isSuccessUpdateContent } = useMutation(async (values: any) => {
+    try {
+      const response = await axios.put(`/api/content/${contentId}`, values)
       if (response.status === 200) {
         refetchDetailForumQuery()
         refetchUserLogin()
@@ -517,8 +553,10 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                                                 setOpenUpdateForum(!openUpdateForum)
                                               }}><IconEdit size={15} /> Edit Pertanyaan</Button>
                                               <Button variant='outlined' size="small" color="error" onClick={() => {
-                                                mutateDeleteForum(detailForumQuery.id)
-                                                router.push('/questions')
+                                                setOpenDeleteForum(!openDeleteForum)
+                                                setTimeout(() => {
+                                                  router.push('/questions')
+                                                }, 5000)
                                               }}><IconEraser size={15} /> Hapus Pertanyaan</Button>
                                               <form onSubmit={formikUpdateForum.handleSubmit}>
                                                 <Dialog
@@ -602,6 +640,30 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                                                   </DialogActions>
                                                 </Dialog>
                                               </form>
+                                              <Dialog
+                                                open={openDeleteForum}
+                                                onClose={() => setOpenDeleteForum(!openDeleteForum)}
+                                                aria-labelledby="alert-dialog-title"
+                                                aria-describedby="alert-dialog-description"
+                                              >
+                                                <DialogTitle id="alert-dialog-title">
+                                                  {"Hapus Pertanyaan ?"}
+                                                </DialogTitle>
+                                                <DialogContent>
+                                                  <DialogContentText id="alert-dialog-description">
+                                                    Pertanyaan yang anda pilih akan dihapus secara permanen
+                                                  </DialogContentText>
+                                                </DialogContent>
+                                                <DialogActions>
+                                                  <Button onClick={() => setOpenDeleteForum(!openDeleteForum)}>Batal</Button>
+                                                  <Button onClick={() => {
+                                                    mutateDeleteForum(detailForumQuery.id)
+                                                    setOpenDeleteForum(!openDeleteForum)
+                                                  }} autoFocus>
+                                                    Hapus
+                                                  </Button>
+                                                </DialogActions>
+                                              </Dialog>
                                               {isSuccessDeleteForum && <SnackBarSuccess title="Berhasil menghapus pertanyaan" />}
                                               {isSuccessUpdateForum && <SnackBarSuccess title="Berhasil mengubah pertanyaan" />}
                                             </Stack>
@@ -611,11 +673,85 @@ const QuestionDetail = ({ params }: { params: { id: string } }) => {
                                         <>
                                           {getToken() ?
                                             <Stack direction="row" spacing={1}>
-                                              <Button variant='outlined' size="small" color="success"><IconEdit size={15} /> Edit Jawaban</Button>
+                                              <Button variant='outlined' size="small" color="success" onClick={() => {
+                                                setContentId(content.id)
+                                                formikUpdateContent.setFieldValue('content_value', content.content_value)
+                                                setOpenUpdateContent(!openUpdateContent)
+                                              }}><IconEdit size={15} /> Edit Jawaban</Button>
                                               <Button variant='outlined' size="small" color="error" onClick={() => {
-                                                mutateDeleteContent(content.id)
+                                                setContentId(content.id)
+                                                setOpenDeleteContent(!openDeleteContent)
                                               }}><IconEraser size={15} /> Hapus Jawaban</Button>
+                                              <form onSubmit={formikUpdateContent.handleSubmit}>
+                                                <Dialog
+                                                  fullWidth
+                                                  open={openUpdateContent}
+                                                  onClose={() => setOpenUpdateForum(!openUpdateContent)}
+                                                  PaperProps={{
+                                                    component: 'form',
+                                                    onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                                                      event.preventDefault();
+                                                      const formData = new FormData(event.currentTarget);
+                                                      const formJson = Object.fromEntries((formData as any).entries());
+                                                      setOpenUpdateContent(!openUpdateContent)
+                                                    },
+                                                  }}
+                                                >
+                                                  <DialogTitle>Edit jawaban anda</DialogTitle>
+                                                  <DialogContent>
+                                                    <Grid container spacing={2}>
+                                                      <Grid item xs={12}>
+                                                        <Stack
+                                                          direction="column"
+                                                          divider={<Divider orientation="horizontal" sx={{ borderWidth: '2px' }} flexItem />}
+                                                          spacing={2}
+                                                        >
+                                                          <Grid item xs={12} style={{ height: 390 }} sx={{ mb: 3 }}>
+                                                            <TinyMCEEditor onEditorChange={(content: string) => {
+                                                              formikUpdateContent.setFieldValue('content_value', content)
+                                                            }} uploadToCLoudinary={uploadToCLoudinary} value={formikUpdateContent.values.content_value} />
+                                                            {formikUpdateContent.values.content_value === '' ?
+                                                              <Typography color="error">Isi konten wajib diisi</Typography>
+                                                              : null}
+                                                          </Grid>
+                                                        </Stack>
+                                                      </Grid>
+                                                    </Grid>
+                                                  </DialogContent>
+                                                  <DialogActions>
+                                                    <Button onClick={() => {
+                                                      setOpenUpdateContent(!openUpdateContent)
+                                                    }}>Batal</Button>
+                                                    <Button type="submit">Kirim</Button>
+                                                  </DialogActions>
+                                                </Dialog>
+                                              </form>
+                                              <Dialog
+                                                open={openDeleteContent}
+                                                onClose={() => setOpenDeleteContent(!openDeleteContent)}
+                                                aria-labelledby="alert-dialog-title"
+                                                aria-describedby="alert-dialog-description"
+                                              >
+                                                <DialogTitle id="alert-dialog-title">
+                                                  {"Hapus Jawaban ?"}
+                                                </DialogTitle>
+                                                <DialogContent>
+                                                  <DialogContentText id="alert-dialog-description">
+                                                    Jawaban yang anda pilih akan dihapus secara permanen
+                                                  </DialogContentText>
+                                                </DialogContent>
+                                                <DialogActions>
+                                                  <Button onClick={() => setOpenDeleteContent(!openDeleteContent)}>Batal</Button>
+                                                  <Button onClick={() => {
+                                                    mutateDeleteContent(content.id)
+                                                    setOpenDeleteContent(!openDeleteContent)
+                                                  }} autoFocus>
+                                                    Hapus
+                                                  </Button>
+                                                </DialogActions>
+                                              </Dialog>
                                               {isSuccessDeleteContent && <SnackBarSuccess title="Berhasil menghapus jawaban" />}
+                                              {isSuccessUpdateContent && <SnackBarSuccess title="Berhasil mengubah jawaban" />}
                                             </Stack>
                                             : null}
                                         </>}
