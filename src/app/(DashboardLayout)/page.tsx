@@ -8,12 +8,16 @@ import TagOverview from '@/app/(DashboardLayout)/components/dashboard/TagOvervie
 import RecentTransactions from '@/app/(DashboardLayout)/components/dashboard/RecentTransactions';
 import ProductPerformance from '@/app/(DashboardLayout)/components/dashboard/ProductPerformance';
 import ForumTag from '@/app/(DashboardLayout)/components/dashboard/ForumTag';
+import AboutForumophic from './components/dashboard/AboutForumophic';
 
 const Dashboard = () => {
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">
       <Box>
         <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <AboutForumophic />
+          </Grid>
           <Grid item xs={12} lg={8}>
             <ForumOverview />
           </Grid>
